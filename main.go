@@ -5,7 +5,6 @@ import (
 	"os"
 	"pendaftaran-pasien-backend/internal/config"
 	loginhistory "pendaftaran-pasien-backend/internal/login_history"
-	"pendaftaran-pasien-backend/internal/middleware"
 	"pendaftaran-pasien-backend/internal/token"
 	"pendaftaran-pasien-backend/internal/user"
 	"strconv"
@@ -73,7 +72,7 @@ func main() {
 	userHandler := user.NewUserHandler(userService)
 
 	api.POST("/auth/login", userHandler.Login)
-	api.POST("/auth/password", middleware.AuthMiddleware(tokenService), userHandler.UpdatePassword)
+	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
