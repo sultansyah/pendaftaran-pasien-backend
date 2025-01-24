@@ -3,7 +3,6 @@
 ## Prerequisites
 - Go
 - MySQL
-- migrate CLI tool
 
 ## Setup Instructions
 
