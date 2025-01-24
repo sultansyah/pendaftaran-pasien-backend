@@ -33,6 +33,7 @@ DB_PORT=3306
 Run SQL code:
 ```sql
 CREATE DATABASE pendaftaran_pasien;
+```
 
 
 ### 4. Install Dependencies
