@@ -2,6 +2,8 @@
 
 ## Prerequisites
 - Go
+- MySQL
+- migrate CLI tool
 
 ## Setup Instructions
 
@@ -27,12 +29,18 @@ DB_HOST=localhost
 DB_PORT=3306
 ```
 
-### 3. Install Dependencies
+### 3. Create Database
+Run SQL code:
+```sql
+CREATE DATABASE pendaftaran_pasien;
+
+
+### 4. Install Dependencies
 ```bash
 go mod tidy
 ```
 
-### 4. Run Server
+### 5. Run Server
 ```bash
 go run main.go
 ```
