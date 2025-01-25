@@ -9,5 +9,6 @@ CREATE TABLE doctor (
     phone_number VARCHAR(20) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT(1) DEFAULT 0,
     FOREIGN KEY (clinic_id) REFERENCES polyclinic(clinic_id)
 );

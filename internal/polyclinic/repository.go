@@ -8,11 +8,11 @@ import (
 
 type PolyclinicRepository interface {
 	FindAll(ctx context.Context, tx *sql.Tx) ([]Polyclinic, error)
-	FindById(ctx context.Context, tx *sql.Tx, id int) (Polyclinic, error)
+	FindById(ctx context.Context, tx *sql.Tx, clinic_id string) (Polyclinic, error)
 	Count(ctx context.Context, tx *sql.Tx) (int, error)
 	Insert(ctx context.Context, tx *sql.Tx, polyclinic Polyclinic) (Polyclinic, error)
 	Update(ctx context.Context, tx *sql.Tx, polyclinic Polyclinic) error
-	Delete(ctx context.Context, tx *sql.Tx, id int) error
+	Delete(ctx context.Context, tx *sql.Tx, clinic_id string) error
 }
 
 type PolyclinicRepositoryImpl struct {
@@ -42,9 +42,9 @@ func (p *PolyclinicRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, 
 	return -1, custom.ErrNotFound
 }
 
-func (p *PolyclinicRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, id int) error {
-	query := "delete from polyclinic where id = ?"
-	_, err := tx.ExecContext(ctx, query)
+func (p *PolyclinicRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, clinic_id string) error {
+	query := "delete from polyclinic where clinic_id = ? AND is_deleted = 0"
+	_, err := tx.ExecContext(ctx, query, clinic_id)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (p *PolyclinicRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, id in
 }
 
 func (p *PolyclinicRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]Polyclinic, error) {
-	query := "SELECT clinic_id, clinic_name, location, created_at, updated_at FROM polyclinic"
+	query := "SELECT clinic_id, clinic_name, location, created_at, updated_at FROM polyclinic where is_deleted = 0"
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		return []Polyclinic{}, err
@@ -71,9 +71,9 @@ func (p *PolyclinicRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]P
 	return polyclinics, nil
 }
 
-func (p *PolyclinicRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, id int) (Polyclinic, error) {
-	query := "SELECT clinic_id, clinic_name, location, created_at, updated_at FROM polyclinic where clinic_id = ?"
-	row, err := tx.QueryContext(ctx, query, id)
+func (p *PolyclinicRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, clinic_id string) (Polyclinic, error) {
+	query := "SELECT clinic_id, clinic_name, location, created_at, updated_at FROM polyclinic where clinic_id = ? AND is_deleted = 0"
+	row, err := tx.QueryContext(ctx, query, clinic_id)
 	if err != nil {
 		return Polyclinic{}, err
 	}
@@ -101,7 +101,7 @@ func (p *PolyclinicRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, polyc
 }
 
 func (p *PolyclinicRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, polyclinic Polyclinic) error {
-	query := "UPDATE polyclinic SET clinic_name=?,location=? WHERE clinic_id = ?"
+	query := "UPDATE polyclinic SET clinic_name=?,location=? WHERE clinic_id = ? AND is_deleted = 0"
 	_, err := tx.ExecContext(ctx, query, polyclinic.ClinicName, polyclinic.Location, polyclinic.ClinicID)
 	if err != nil {
 		return err

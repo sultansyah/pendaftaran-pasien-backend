@@ -1,0 +1,12 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+
+### Create
+POST {{baseUrl}}/polyclinics
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODQ0MzgsInVzZXJfaWQiOjF9.NFz5VthfRfz3VIk4I9XblKOonfRwJ3bgBp0fm_4M7jE
+Content-Type: application/json
+
+{
+    "clinic_name": "Poliknik percobaan",
+    "location": "lantai 1 sebelah kiri"
+}

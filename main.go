@@ -5,6 +5,8 @@ import (
 	"os"
 	"pendaftaran-pasien-backend/internal/config"
 	loginhistory "pendaftaran-pasien-backend/internal/login_history"
+	"pendaftaran-pasien-backend/internal/middleware"
+	"pendaftaran-pasien-backend/internal/polyclinic"
 	"pendaftaran-pasien-backend/internal/token"
 	"pendaftaran-pasien-backend/internal/user"
 	"strconv"
@@ -71,8 +73,18 @@ func main() {
 	userService := user.NewUserService(db, userRepository, tokenService, loginHistoryRepository)
 	userHandler := user.NewUserHandler(userService)
 
+	polyclinicRepository := polyclinic.NewPolyclinicRepository()
+	polyclinicService := polyclinic.NewPolyclinicService(db, polyclinicRepository)
+	polyclinicHandler := polyclinic.NewPolyclinicHandler(polyclinicService)
+
 	api.POST("/auth/login", userHandler.Login)
 	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
+
+	api.GET("/polyclinics", middleware.AuthMiddleware(tokenService), polyclinicHandler.GetAll)
+	api.GET("/polyclinics/:clinic_id", middleware.AuthMiddleware(tokenService), polyclinicHandler.GetById)
+	api.POST("/polyclinics", middleware.AuthMiddleware(tokenService), polyclinicHandler.Create)
+	api.PUT("/polyclinics/:clinic_id", middleware.AuthMiddleware(tokenService), polyclinicHandler.Update)
+	api.DELETE("/polyclinics/:clinic_id", middleware.AuthMiddleware(tokenService), polyclinicHandler.Delete)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
