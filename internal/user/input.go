@@ -1,12 +1,10 @@
 package user
 
-import "time"
-
 type LoginUserInput struct {
-	StaffCode string    `json:"staff_code" binding:"required"`
-	StaffName string    `json:"staff_name" binding:"required"`
-	Password  string    `json:"password" binding:"required"`
-	Date      time.Time `json:"date" binding:"required"`
+	StaffCode string `json:"staff_code" binding:"required"`
+	StaffName string `json:"staff_name" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+	Date      string `json:"date" binding:"required"`
 }
 
 type UpdatePasswordUserInput struct {

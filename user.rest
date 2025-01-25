@@ -1,0 +1,23 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+
+### Login User
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "staff_code": "staff",
+    "staff_name": "staff",
+    "password": "staff",
+    "date": "2025-01-25T14:30"
+}
+
+### Change Password User
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+    "staff_code": "staff",
+    "staff_name": "staff",
+    "password": "staffs"
+}

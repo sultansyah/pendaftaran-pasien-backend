@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	FindByCodeNamePassword(ctx context.Context, tx *sql.Tx, user User) (User, error)
+	FindByCodeAndName(ctx context.Context, tx *sql.Tx, user User) (User, error)
 	Update(ctx context.Context, tx *sql.Tx, user User) error
 }
 
@@ -18,9 +18,9 @@ func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{}
 }
 
-func (u *UserRepositoryImpl) FindByCodeNamePassword(ctx context.Context, tx *sql.Tx, user User) (User, error) {
-	sql := "select id, staff_code, staff_name, password, created_at, updated_at from users where staff_code = ? && staff_name = ? && password = ?"
-	row, err := tx.QueryContext(ctx, sql, user.StaffCode, user.StaffName, user.Password)
+func (u *UserRepositoryImpl) FindByCodeAndName(ctx context.Context, tx *sql.Tx, user User) (User, error) {
+	sql := "select id, staff_code, staff_name, password, created_at, updated_at from users where staff_code = ? AND staff_name = ?"
+	row, err := tx.QueryContext(ctx, sql, user.StaffCode, user.StaffName)
 	if err != nil {
 		return User{}, err
 	}

@@ -40,7 +40,7 @@ func HandleErrorResponde(c *gin.Context, err error) {
 	case bcrypt.ErrMismatchedHashAndPassword:
 		webResponse.Code = http.StatusUnauthorized
 		webResponse.Status = "error"
-		webResponse.Message = "username or password is incorrect"
+		webResponse.Message = custom.ErrInvalidCredentials.Error()
 	case custom.ErrUnauthorized:
 		webResponse.Code = http.StatusUnauthorized
 		webResponse.Status = "error"
@@ -51,6 +51,10 @@ func HandleErrorResponde(c *gin.Context, err error) {
 		webResponse.Message = err.Error()
 	case custom.ErrInsufficientStock:
 		webResponse.Code = http.StatusConflict
+		webResponse.Status = "error"
+		webResponse.Message = err.Error()
+	case custom.ErrInvalidCredentials:
+		webResponse.Code = http.StatusUnauthorized
 		webResponse.Status = "error"
 		webResponse.Message = err.Error()
 	default:

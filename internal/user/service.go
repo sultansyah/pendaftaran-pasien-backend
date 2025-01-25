@@ -42,16 +42,30 @@ func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserInput) (User
 	user := User{
 		StaffName: input.StaffName,
 		StaffCode: input.StaffCode,
-		Password:  input.Password,
 	}
 
-	user, err = u.UserRepository.FindByCodeNamePassword(ctx, tx, user)
+	user, err = u.UserRepository.FindByCodeAndName(ctx, tx, user)
+	if err != nil && err != custom.ErrNotFound {
+		return User{}, "", err
+	}
+	if err == custom.ErrNotFound || user.Id <= 0 {
+		return User{}, "", custom.ErrInvalidCredentials
+	}
+
+	date, err := helper.ParseDateTimeLocal(input.Date)
 	if err != nil {
 		return User{}, "", err
 	}
-	if user.Id <= 0 {
-		return User{}, "", custom.ErrNotFound
-	}
+
+	defer func() {
+		loginHistory := loginhistory.LoginHistory{
+			UserId:    user.Id,
+			LoginTime: date,
+			Success:   isLoginSuccess,
+		}
+
+		_, err = u.LoginHistoryRepository.Insert(ctx, tx, loginHistory)
+	}()
 
 	isSame, err := helper.ComparePassword(user.Password, input.Password)
 	if err != nil {
@@ -65,16 +79,6 @@ func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserInput) (User
 	if err != nil {
 		return User{}, "", err
 	}
-
-	defer func() {
-		loginHistory := loginhistory.LoginHistory{
-			UserId:    user.Id,
-			LoginTime: input.Date,
-			Success:   isLoginSuccess,
-		}
-
-		_, err = u.LoginHistoryRepository.Insert(ctx, tx, loginHistory)
-	}()
 
 	isLoginSuccess = true
 
@@ -94,12 +98,12 @@ func (u *UserServiceImpl) UpdatePassword(ctx context.Context, input UpdatePasswo
 		Password:  input.Password,
 	}
 
-	user, err = u.UserRepository.FindByCodeNamePassword(ctx, tx, user)
-	if err != nil {
+	user, err = u.UserRepository.FindByCodeAndName(ctx, tx, user)
+	if err != nil && err != custom.ErrNotFound {
 		return err
 	}
-	if user.Id <= 0 {
-		return custom.ErrNotFound
+	if err == custom.ErrNotFound || user.Id <= 0 {
+		return custom.ErrInvalidCredentials
 	}
 
 	hashedPassword, err := helper.HashPassword(input.Password)
