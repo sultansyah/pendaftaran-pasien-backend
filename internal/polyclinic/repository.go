@@ -43,8 +43,8 @@ func (p *PolyclinicRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, 
 }
 
 func (p *PolyclinicRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, clinic_id string) error {
-	query := "delete from polyclinic where clinic_id = ? AND is_deleted = 0"
-	_, err := tx.ExecContext(ctx, query, clinic_id)
+	query := "UPDATE polyclinic SET is_deleted=? WHERE clinic_id = ? AND is_deleted = 0"
+	_, err := tx.ExecContext(ctx, query, 1, clinic_id)
 	if err != nil {
 		return err
 	}
