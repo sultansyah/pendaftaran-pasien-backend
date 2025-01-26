@@ -7,11 +7,11 @@ import (
 )
 
 type PatientRepository interface {
-	FindByNoMR(ctx context.Context, tx *sql.Tx, noMR string) (Patient, error)
+	FindByNoMR(ctx context.Context, tx *sql.Tx, medicalRecordNo string) (Patient, error)
 	FindAll(ctx context.Context, tx *sql.Tx) ([]Patient, error)
 	Insert(ctx context.Context, tx *sql.Tx, patient Patient) (Patient, error)
 	Update(ctx context.Context, tx *sql.Tx, patient Patient) error
-	Delete(ctx context.Context, tx *sql.Tx, noMR string) error
+	Delete(ctx context.Context, tx *sql.Tx, medicalRecordNo string) error
 	Count(ctx context.Context, tx *sql.Tx) (int, error)
 }
 
@@ -42,9 +42,9 @@ func (p *PatientRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, err
 	return -1, custom.ErrNotFound
 }
 
-func (p *PatientRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, noMR string) error {
+func (p *PatientRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, medicalRecordNo string) error {
 	query := "delete from patient where medical_record_no = ?"
-	_, err := tx.ExecContext(ctx, query, noMR)
+	_, err := tx.ExecContext(ctx, query, medicalRecordNo)
 	if err != nil {
 		return err
 	}
@@ -72,9 +72,9 @@ func (p *PatientRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]Pati
 	return patients, nil
 }
 
-func (p *PatientRepositoryImpl) FindByNoMR(ctx context.Context, tx *sql.Tx, noMR string) (Patient, error) {
+func (p *PatientRepositoryImpl) FindByNoMR(ctx context.Context, tx *sql.Tx, medicalRecordNo string) (Patient, error) {
 	query := "SELECT medical_record_no, patient_name, gender, place_of_birth, date_of_birth, address, phone_number, identity_type, identity_number, city, postal_code, medical_record_date, birth_weight, ethnicity, subdistrict, district, regency, province, citizenship, country, language, blood_type, KK_number, marital_status, religion, occupation, education, npwp, file_location, relative_name, relative_relationship, relative_phone, relative_identity_number, relative_occupation, relative_address, relative_city, relative_postal_code, mother_medical_record_no, created_at, updated_at FROM patient where medical_record_no = ?"
-	row, err := tx.QueryContext(ctx, query, noMR)
+	row, err := tx.QueryContext(ctx, query, medicalRecordNo)
 	if err != nil {
 		return Patient{}, err
 	}

@@ -43,5 +43,5 @@ type CreatePatientInput struct {
 }
 
 type GetPatientInput struct {
-	NoMR string `uri:"no_mr"`
+	MedicalRecordNo string `uri:"medical_record_no"`
 }
