@@ -17,3 +17,8 @@ type GetDoctorInput struct {
 type GetDoctorByClinicInput struct {
 	ClinicID string `uri:"clinic_id" binding:"required"`
 }
+
+type GetDoctorByDayAndClinicInput struct {
+	Day      string `uri:"day" binding:"required"`
+	ClinicID string `uri:"clinic_id" binding:"required"`
+}

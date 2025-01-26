@@ -13,6 +13,7 @@ type DoctorService interface {
 	GetAll(ctx context.Context) ([]Doctor, error)
 	GetById(ctx context.Context, input GetDoctorInput) (Doctor, error)
 	GetByClinicId(ctx context.Context, input GetDoctorByClinicInput) ([]Doctor, error)
+	GetByDayAndClinicId(ctx context.Context, input GetDoctorByDayAndClinicInput) ([]Doctor, error)
 	Create(ctx context.Context, input CreateDoctorInput) (Doctor, error)
 	Update(ctx context.Context, inputId GetDoctorInput, inputData CreateDoctorInput) error
 	Delete(ctx context.Context, input GetDoctorInput) error
@@ -134,6 +135,29 @@ func (p *DoctorServiceImpl) GetByClinicId(ctx context.Context, input GetDoctorBy
 	defer helper.HandleTransaction(tx, &err)
 
 	doctors, err := p.DoctorRepository.FindByClinicID(ctx, tx, input.ClinicID)
+	if err != nil {
+		return []Doctor{}, err
+	}
+
+	return doctors, nil
+}
+
+func (p *DoctorServiceImpl) GetByDayAndClinicId(ctx context.Context, input GetDoctorByDayAndClinicInput) ([]Doctor, error) {
+	tx, err := p.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return []Doctor{}, err
+	}
+	defer helper.HandleTransaction(tx, &err)
+
+	polyclinic, err := p.PolyclinicRepository.FindById(ctx, tx, input.ClinicID)
+	if err != nil && err != custom.ErrNotFound {
+		return []Doctor{}, err
+	}
+	if err == custom.ErrNotFound || polyclinic.ClinicID == "" {
+		return []Doctor{}, custom.ErrPolyclinicNotFound
+	}
+
+	doctors, err := p.DoctorRepository.FindByDayAndClinicID(ctx, tx, input.Day, input.ClinicID)
 	if err != nil {
 		return []Doctor{}, err
 	}

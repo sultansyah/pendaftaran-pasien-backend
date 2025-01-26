@@ -94,6 +94,8 @@ func main() {
 	api.GET("/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.GetAll)
 	api.GET("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.GetById)
 	api.GET("/polyclinics/:clinic_id/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.GetByClinicId)
+	// retrieve doctor data based on clinic and available day
+	api.GET("/polyclinics/:clinic_id/doctors/:day", middleware.AuthMiddleware(tokenService), doctorHandler.GetByDayAndClinicId)
 	api.POST("/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.Create)
 	api.PUT("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Update)
 	api.DELETE("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Delete)

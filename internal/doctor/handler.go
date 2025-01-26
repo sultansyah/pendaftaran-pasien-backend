@@ -11,6 +11,7 @@ type DoctorHandler interface {
 	GetAll(c *gin.Context)
 	GetById(c *gin.Context)
 	GetByClinicId(c *gin.Context)
+	GetByDayAndClinicId(c *gin.Context)
 	Create(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
@@ -106,6 +107,26 @@ func (p *DoctorHandlerImpl) GetByClinicId(c *gin.Context) {
 	}
 
 	doctors, err := p.DoctorService.GetByClinicId(c.Request.Context(), input)
+	if err != nil {
+		helper.HandleErrorResponde(c, err)
+		return
+	}
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "success get data doctors",
+		Data:    doctors,
+	})
+}
+
+func (p *DoctorHandlerImpl) GetByDayAndClinicId(c *gin.Context) {
+	var input GetDoctorByDayAndClinicInput
+	if !helper.BindAndValidate(c, &input, "uri") {
+		return
+	}
+
+	doctors, err := p.DoctorService.GetByDayAndClinicId(c.Request.Context(), input)
 	if err != nil {
 		helper.HandleErrorResponde(c, err)
 		return

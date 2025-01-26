@@ -10,7 +10,7 @@ Content-Type: application/json
     "clinic_id": "POL04",
     "doctor_name": "dr. Percobaan Nama 3",
     "specialization": "ini percobaan create",
-    "days": "Senin, Selasa, Rabu",
+    "days": "Sabtu",
     "start_time": "08:45",
     "end_time": "14:30",
     "phone_number": "023182318219"
@@ -29,6 +29,11 @@ Content-Type: application/json
 
 ### Get By CLinic Id
 GET {{baseUrl}}/polyclinics/POL04/doctors
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+### Get By CLinic Id and Day
+GET {{baseUrl}}/polyclinics/POL04/doctors/Sabtu
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
 Content-Type: application/json
 

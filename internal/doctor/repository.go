@@ -4,12 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"pendaftaran-pasien-backend/internal/custom"
+	"strings"
 )
 
 type DoctorRepository interface {
 	FindAll(ctx context.Context, tx *sql.Tx) ([]Doctor, error)
-	FindById(ctx context.Context, tx *sql.Tx, doctorId string) (Doctor, error)
+	FindByDayAndClinicID(ctx context.Context, tx *sql.Tx, day string, clinicId string) ([]Doctor, error)
 	FindByClinicID(ctx context.Context, tx *sql.Tx, clinicId string) ([]Doctor, error)
+	FindById(ctx context.Context, tx *sql.Tx, doctorId string) (Doctor, error)
 	Count(ctx context.Context, tx *sql.Tx) (int, error)
 	Insert(ctx context.Context, tx *sql.Tx, doctor Doctor) (Doctor, error)
 	Update(ctx context.Context, tx *sql.Tx, doctor Doctor) error
@@ -55,6 +57,27 @@ func (p *DoctorRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, doctorId 
 func (p *DoctorRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]Doctor, error) {
 	query := "SELECT doctor_id, clinic_id, doctor_name, specialization, days, start_time, end_time, phone_number, created_at, updated_at FROM doctor where is_deleted = 0"
 	rows, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return []Doctor{}, err
+	}
+	defer rows.Close()
+
+	var doctors []Doctor
+	for rows.Next() {
+		var doctor Doctor
+		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+			return []Doctor{}, err
+		}
+		doctors = append(doctors, doctor)
+	}
+
+	return doctors, nil
+}
+
+func (p *DoctorRepositoryImpl) FindByDayAndClinicID(ctx context.Context, tx *sql.Tx, day string, clinicId string) ([]Doctor, error) {
+	dayPattern := "%" + strings.ToLower(day) + "%"
+	query := "SELECT doctor_id, clinic_id, doctor_name, specialization, days, start_time, end_time, phone_number, created_at, updated_at FROM doctor where LOWER(days) LIKE ? AND clinic_id = ? AND is_deleted = 0"
+	rows, err := tx.QueryContext(ctx, query, dayPattern, clinicId)
 	if err != nil {
 		return []Doctor{}, err
 	}
