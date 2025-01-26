@@ -3,7 +3,7 @@
 
 ### Create
 POST {{baseUrl}}/polyclinics
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 {
@@ -13,23 +13,23 @@ Content-Type: application/json
 
 ### Get ALl
 GET {{baseUrl}}/polyclinics
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 
 ### Get By Clinic Id
 GET {{baseUrl}}/polyclinics/POL13
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 ### Delete By Clinic Id
 DELETE {{baseUrl}}/polyclinics/POL14
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 ### Update
 PUT {{baseUrl}}/polyclinics/POL03
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 {

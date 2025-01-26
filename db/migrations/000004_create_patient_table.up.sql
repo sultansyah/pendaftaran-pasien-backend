@@ -41,5 +41,6 @@ CREATE TABLE patient (
     mother_medical_record_no VARCHAR(50) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT(1) DEFAULT 0,
     FOREIGN KEY (mother_medical_record_no) REFERENCES patient(medical_record_no)
 );

@@ -48,7 +48,6 @@ Content-Type: application/json
     "mother_medical_record_no": null
 }
 
-
 ### Get ALl
 GET {{baseUrl}}/patients
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
