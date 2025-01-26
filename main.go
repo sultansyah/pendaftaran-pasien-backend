@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"pendaftaran-pasien-backend/internal/config"
+	"pendaftaran-pasien-backend/internal/doctor"
 	loginhistory "pendaftaran-pasien-backend/internal/login_history"
 	"pendaftaran-pasien-backend/internal/middleware"
 	"pendaftaran-pasien-backend/internal/polyclinic"
@@ -77,6 +78,10 @@ func main() {
 	polyclinicService := polyclinic.NewPolyclinicService(db, polyclinicRepository)
 	polyclinicHandler := polyclinic.NewPolyclinicHandler(polyclinicService)
 
+	doctorRepository := doctor.NewDoctorRepository()
+	doctorService := doctor.NewDoctorService(db, doctorRepository)
+	doctorHandler := doctor.NewDoctorHandler(doctorService)
+
 	api.POST("/auth/login", userHandler.Login)
 	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
 
@@ -85,6 +90,13 @@ func main() {
 	api.POST("/polyclinics", middleware.AuthMiddleware(tokenService), polyclinicHandler.Create)
 	api.PUT("/polyclinics/:clinic_id", middleware.AuthMiddleware(tokenService), polyclinicHandler.Update)
 	api.DELETE("/polyclinics/:clinic_id", middleware.AuthMiddleware(tokenService), polyclinicHandler.Delete)
+
+	api.GET("/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.GetAll)
+	api.GET("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.GetById)
+	api.GET("/polyclinics/:clinic_id/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.GetByClinicId)
+	api.POST("/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.Create)
+	api.PUT("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Update)
+	api.DELETE("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Delete)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
