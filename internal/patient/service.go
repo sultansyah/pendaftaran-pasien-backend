@@ -34,6 +34,19 @@ func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInpu
 	}
 	defer helper.HandleTransaction(tx, &err)
 
+	var motherMedicalRecordNo *string
+	if input.MotherMedicalRecordNo != nil {
+		motherP, err := p.PatientRepository.FindByNoMR(ctx, tx, *input.MotherMedicalRecordNo)
+		if err != nil {
+			return Patient{}, err
+		}
+		if motherP.MedicalRecordNo == "" {
+			return Patient{}, custom.ErrMedicalRecordNotFound
+		}
+
+		motherMedicalRecordNo = &motherP.MedicalRecordNo
+	}
+
 	total, err := p.PatientRepository.Count(ctx, tx)
 	if err != nil {
 		return Patient{}, err
@@ -89,7 +102,7 @@ func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInpu
 		RelativeAddress:        input.RelativeAddress,
 		RelativeCity:           input.RelativeCity,
 		RelativePostalCode:     input.RelativePostalCode,
-		MotherMedicalRecordNo:  input.MotherMedicalRecordNo,
+		MotherMedicalRecordNo:  motherMedicalRecordNo,
 	}
 
 	patient, err = p.PatientRepository.Insert(ctx, tx, patient)
@@ -112,7 +125,7 @@ func (p *PatientServiceImpl) Delete(ctx context.Context, input GetPatientInput) 
 		return err
 	}
 	if patient.MedicalRecordNo == "" {
-		return custom.ErrNotFound
+		return custom.ErrMedicalRecordNotFound
 	}
 
 	err = p.PatientRepository.Delete(ctx, tx, input.MedicalRecordNo)
@@ -165,7 +178,7 @@ func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput
 		return err
 	}
 	if patient.MedicalRecordNo == "" {
-		return custom.ErrNotFound
+		return custom.ErrMedicalRecordNotFound
 	}
 
 	dateOfBirth, err := helper.ParseToHour(inputData.DateOfBirth)
