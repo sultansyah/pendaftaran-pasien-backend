@@ -3,6 +3,7 @@ package patient
 import (
 	"context"
 	"database/sql"
+	"pendaftaran-pasien-backend/internal/helper"
 )
 
 type PatientService interface {
@@ -26,7 +27,13 @@ func NewPatientService(DB *sql.DB, patientRepository PatientRepository) PatientS
 }
 
 func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInput) (Patient, error) {
-	panic("unimplemented")
+	tx, err := p.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return Patient{}, err
+	}
+	defer helper.HandleTransaction(tx, &err)
+
+	total, err := p.PatientRepository
 }
 
 func (p *PatientServiceImpl) Delete(ctx context.Context, input GetPatientInput) error {

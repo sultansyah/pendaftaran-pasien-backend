@@ -12,6 +12,7 @@ type PatientRepository interface {
 	Insert(ctx context.Context, tx *sql.Tx, patient Patient) (Patient, error)
 	Update(ctx context.Context, tx *sql.Tx, patient Patient) error
 	Delete(ctx context.Context, tx *sql.Tx, noMR string) error
+	Count(ctx context.Context, tx *sql.Tx) (int, error)
 }
 
 type PatientRepositoryImpl struct {
@@ -19,6 +20,26 @@ type PatientRepositoryImpl struct {
 
 func NewPatientRepository() PatientRepository {
 	return &PatientRepositoryImpl{}
+}
+
+func (p *PatientRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, error) {
+	query := "SELECT COUNT(medical_record_no) AS total FROM patient"
+	row, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return -1, err
+	}
+	defer row.Close()
+
+	var total int
+	if row.Next() {
+		if err := row.Scan(&total); err != nil {
+			return -1, err
+		}
+
+		return total, nil
+	}
+
+	return -1, custom.ErrNotFound
 }
 
 func (p *PatientRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, noMR string) error {
