@@ -7,6 +7,7 @@ import (
 	"pendaftaran-pasien-backend/internal/doctor"
 	loginhistory "pendaftaran-pasien-backend/internal/login_history"
 	"pendaftaran-pasien-backend/internal/middleware"
+	"pendaftaran-pasien-backend/internal/patient"
 	"pendaftaran-pasien-backend/internal/polyclinic"
 	"pendaftaran-pasien-backend/internal/token"
 	"pendaftaran-pasien-backend/internal/user"
@@ -82,6 +83,10 @@ func main() {
 	doctorService := doctor.NewDoctorService(db, doctorRepository, polyclinicRepository)
 	doctorHandler := doctor.NewDoctorHandler(doctorService)
 
+	patientRepository := patient.NewPatientRepository()
+	patientService := patient.NewPatientService(db, patientRepository)
+	patientHandler := patient.NewPatientHandler(patientService)
+
 	api.POST("/auth/login", userHandler.Login)
 	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
 
@@ -99,6 +104,12 @@ func main() {
 	api.POST("/doctors", middleware.AuthMiddleware(tokenService), doctorHandler.Create)
 	api.PUT("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Update)
 	api.DELETE("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Delete)
+
+	api.GET("/patients", middleware.AuthMiddleware(tokenService), patientHandler.GetAll)
+	api.GET("/patients/:medical_record_no", middleware.AuthMiddleware(tokenService), patientHandler.GetByNoMR)
+	api.POST("/patients", middleware.AuthMiddleware(tokenService), patientHandler.Create)
+	api.PUT("/patients/:medical_record_no", middleware.AuthMiddleware(tokenService), patientHandler.Update)
+	api.DELETE("/patients/:medical_record_no", middleware.AuthMiddleware(tokenService), patientHandler.Delete)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)

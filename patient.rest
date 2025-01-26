@@ -1,0 +1,38 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+
+### Create
+POST {{baseUrl}}/polyclinics
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+{
+    "clinic_name": "Poliknik percobaan",
+    "location": "lantai 1 sebelah kiri"
+}
+
+### Get ALl
+GET {{baseUrl}}/polyclinics
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+
+### Get By Clinic Id
+GET {{baseUrl}}/polyclinics/POL13
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+### Delete By Clinic Id
+DELETE {{baseUrl}}/polyclinics/POL14
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+### Update
+PUT {{baseUrl}}/polyclinics/POL03
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+{
+    "clinic_name": "Update Poliknik percobaan",
+    "location": "Update lantai 1 sebelah kiri"
+}
