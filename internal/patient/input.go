@@ -39,7 +39,7 @@ type CreatePatientInput struct {
 	RelativeCity           string `json:"relative_city"`
 	RelativePostalCode     string `json:"relative_postal_code"`
 
-	MotherMedicalRecordNo string `json:"mother_medical_record_no"`
+	MotherMedicalRecordNo *string `json:"mother_medical_record_no"`
 }
 
 type GetPatientInput struct {

@@ -38,7 +38,8 @@ func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInpu
 	if err != nil {
 		return Patient{}, err
 	}
-	dateOfBirth, err := helper.ParseToHour(input.DateOfBirth)
+
+	dateOfBirth, err := helper.ParseDate(input.DateOfBirth)
 	if err != nil {
 		return Patient{}, err
 	}

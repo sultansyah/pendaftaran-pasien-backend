@@ -1,6 +1,8 @@
 package patient
 
-import "time"
+import (
+	"time"
+)
 
 type Patient struct {
 	MedicalRecordNo   string    `json:"medical_record_no"`
@@ -42,7 +44,7 @@ type Patient struct {
 	RelativeCity           string `json:"relative_city"`
 	RelativePostalCode     string `json:"relative_postal_code"`
 
-	MotherMedicalRecordNo string `json:"mother_medical_record_no"`
+	MotherMedicalRecordNo *string `json:"mother_medical_record_no"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

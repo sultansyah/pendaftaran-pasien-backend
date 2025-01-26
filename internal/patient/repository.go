@@ -101,11 +101,13 @@ func (p *PatientRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, patient 
 	mother_medical_record_no) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
 	_, err := tx.ExecContext(ctx, query, patient.MedicalRecordNo, patient.PatientName, patient.Gender, patient.PlaceOfBirth,
-		patient.DateOfBirth, patient.Address, patient.PhoneNumber, patient.IdentityType, patient.IdentityNumber, patient.City,
-		patient.PostalCode, patient.MedicalRecordDate, patient.BirthWeight, patient.Ethnicity, patient.Religion,
-		patient.Occupation, patient.Education, patient.NPWP, patient.FileLocation, patient.RelativeName, patient.RelativeRelationship,
-		patient.RelativePhone, patient.RelativeIdentityNumber, patient.RelativeOccupation, patient.RelativeAddress,
-		patient.RelativeCity, patient.RelativePostalCode, patient.MotherMedicalRecordNo)
+		patient.DateOfBirth, patient.Address, patient.PhoneNumber, patient.IdentityType, patient.IdentityNumber,
+		patient.City, patient.PostalCode, patient.MedicalRecordDate, patient.BirthWeight, patient.Ethnicity,
+		patient.Subdistrict, patient.District, patient.REGency, patient.Province, patient.Citizenship, patient.Country,
+		patient.Language, patient.BloodType, patient.KKNumber, patient.MaritalStatus,
+		patient.Religion, patient.Occupation, patient.Education, patient.NPWP, patient.FileLocation, patient.RelativeName,
+		patient.RelativeRelationship, patient.RelativePhone, patient.RelativeIdentityNumber, patient.RelativeOccupation,
+		patient.RelativeAddress, patient.RelativeCity, patient.RelativePostalCode, patient.MotherMedicalRecordNo)
 
 	if err != nil {
 		return patient, err
@@ -122,12 +124,15 @@ func (p *PatientRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, patient 
 	relative_name=?,relative_relationship=?,relative_phone=?,relative_identity_number=?,relative_occupation=?,
 	relative_address=?,relative_city=?,relative_postal_code=?,mother_medical_record_no=? WHERE medical_record_no = ?`
 
-	_, err := tx.ExecContext(ctx, query, patient.MedicalRecordNo, patient.PatientName, patient.Gender, patient.PlaceOfBirth,
-		patient.DateOfBirth, patient.Address, patient.PhoneNumber, patient.IdentityType, patient.IdentityNumber, patient.City,
-		patient.PostalCode, patient.MedicalRecordDate, patient.BirthWeight, patient.Ethnicity, patient.Religion,
-		patient.Occupation, patient.Education, patient.NPWP, patient.FileLocation, patient.RelativeName, patient.RelativeRelationship,
-		patient.RelativePhone, patient.RelativeIdentityNumber, patient.RelativeOccupation, patient.RelativeAddress,
-		patient.RelativeCity, patient.RelativePostalCode, patient.MotherMedicalRecordNo)
+	_, err := tx.ExecContext(ctx, query, patient.PatientName, patient.Gender, patient.PlaceOfBirth, patient.DateOfBirth,
+		patient.Address, patient.PhoneNumber, patient.IdentityType, patient.IdentityNumber, patient.City, patient.PostalCode,
+		patient.MedicalRecordDate, patient.BirthWeight, patient.Ethnicity, patient.Subdistrict, patient.District,
+		patient.REGency, patient.Province, patient.Citizenship, patient.Country, patient.Language,
+		patient.BloodType, patient.KKNumber, patient.MaritalStatus, patient.Religion,
+		patient.Occupation, patient.Education, patient.NPWP, patient.FileLocation, patient.RelativeName,
+		patient.RelativeRelationship, patient.RelativePhone, patient.RelativeIdentityNumber, patient.RelativeOccupation,
+		patient.RelativeAddress, patient.RelativeCity, patient.RelativePostalCode, patient.MotherMedicalRecordNo,
+		patient.MedicalRecordNo)
 
 	if err != nil {
 		return err

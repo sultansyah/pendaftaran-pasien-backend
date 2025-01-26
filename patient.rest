@@ -2,33 +2,71 @@
 @baseUrl = http://localhost:8080/api/v1
 
 ### Create
-POST {{baseUrl}}/polyclinics
+POST {{baseUrl}}/patients
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
 Content-Type: application/json
 
 {
-    "clinic_name": "Poliknik percobaan",
-    "location": "lantai 1 sebelah kiri"
+    "patient_name": "percobaan nama",
+    "gender": "Laki-laki",
+    "place_of_birth": "Bandung",
+    "date_of_birth": "2004-11-12",
+    "address": "Jl. dimana",
+    "phone_number": "0210219239321",
+    "identity_type": "KTP",
+    "identity_number": "00219213010000",
+    "city": "Kota apa",
+    "postal_code": "00021",
+    "medical_record_date": "2025-01-26T14:30",
+    "birth_weight": 3.1,
+    "ethnicity": "Suku",
+    "subdistrict": "Sukajadi",
+    "district": "Bandung Barat",
+    "regency": "Kabupaten Bandung",
+    "province": "Jawa Barat",
+    "citizenship": "Indonesia",
+    "country": "Indonesia",
+    "language": "Indonesia",
+    "blood_type": "O",
+    "kk_number": "021000000000000231",
+    "marital_status": "Belum Menikah",
+    "religion": "Islam",
+    "occupation": "Nganggur",
+    "education": "Diploma",
+    "npwp": "000000210000000",
+    "file_location": "No 3 Di atas",
+    
+    "relative_name": "nama kerabat",
+    "relative_relationship": "hubungan kerabat",
+    "relative_phone": "021012000210",
+    "relative_identity_number": "0000000021000000",
+    "relative_occupation": "Pekerjaan kebarabat",
+    "relative_address": "Jl. dimana kerabat",
+    "relative_city": "Bandung",
+    "relative_postal_code": "000021",
+    
+    "mother_medical_record_no": null
 }
 
+
 ### Get ALl
-GET {{baseUrl}}/polyclinics
+GET {{baseUrl}}/patients
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
 Content-Type: application/json
 
 
 ### Get By Clinic Id
-GET {{baseUrl}}/polyclinics/POL13
+GET {{baseUrl}}/patients/POL13
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
 Content-Type: application/json
 
 ### Delete By Clinic Id
-DELETE {{baseUrl}}/polyclinics/POL14
+DELETE {{baseUrl}}/patients/POL14
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
 Content-Type: application/json
 
 ### Update
-PUT {{baseUrl}}/polyclinics/POL03
+PUT {{baseUrl}}/patients/POL03
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
 Content-Type: application/json
 
