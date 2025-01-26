@@ -5,7 +5,6 @@ import "time"
 type Register struct {
 	RegisterID        string    `json:"register_id"`
 	MedicalRecordNo   string    `json:"medical_record_no"`
-	RegisterDate      time.Time `json:"register_date"`
 	SessionPolyclinic string    `json:"session_polyclinic"`
 	ClinicID          string    `json:"clinic_id"`
 	DoctorID          string    `json:"doctor_id"`
