@@ -42,7 +42,7 @@ func (p *DoctorRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, erro
 		return total, nil
 	}
 
-	return -1, custom.ErrNotFound
+	return -1, custom.ErrDoctorNotFound
 }
 
 func (p *DoctorRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, doctorId string) error {
@@ -131,7 +131,7 @@ func (p *DoctorRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, doctorI
 		return doctor, nil
 	}
 
-	return Doctor{}, custom.ErrNotFound
+	return Doctor{}, custom.ErrDoctorNotFound
 }
 
 func (p *DoctorRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, doctor Doctor) (Doctor, error) {

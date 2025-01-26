@@ -1,7 +1,6 @@
 package register
 
 type CreateRegisterInput struct {
-	RegisterID        string `json:"register_id"`
 	MedicalRecordNo   string `json:"medical_record_no"`
 	SessionPolyclinic string `json:"session_polyclinic"`
 	ClinicID          string `json:"clinic_id"`
@@ -15,4 +14,8 @@ type CreateRegisterInput struct {
 
 type GetRegisterInput struct {
 	RegisterID string `uri:"register_id"`
+}
+
+type GetRegisterByMRNoInput struct {
+	MedicalRecordNo string `uri:"medical_record_no"`
 }

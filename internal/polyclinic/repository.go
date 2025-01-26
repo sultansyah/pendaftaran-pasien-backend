@@ -39,7 +39,7 @@ func (p *PolyclinicRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, 
 		return total, nil
 	}
 
-	return -1, custom.ErrNotFound
+	return -1, custom.ErrPolyclinicNotFound
 }
 
 func (p *PolyclinicRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, clinic_id string) error {
@@ -87,7 +87,7 @@ func (p *PolyclinicRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, cli
 		return polyclinic, nil
 	}
 
-	return Polyclinic{}, custom.ErrNotFound
+	return Polyclinic{}, custom.ErrPolyclinicNotFound
 }
 
 func (p *PolyclinicRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, polyclinic Polyclinic) (Polyclinic, error) {
