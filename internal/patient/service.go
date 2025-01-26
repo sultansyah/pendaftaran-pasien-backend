@@ -173,6 +173,19 @@ func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput
 	}
 	defer helper.HandleTransaction(tx, &err)
 
+	var motherMedicalRecordNo *string
+	if inputData.MotherMedicalRecordNo != nil {
+		motherP, err := p.PatientRepository.FindByNoMR(ctx, tx, *inputData.MotherMedicalRecordNo)
+		if err != nil {
+			return err
+		}
+		if motherP.MedicalRecordNo == "" {
+			return custom.ErrMedicalRecordNotFound
+		}
+
+		motherMedicalRecordNo = &motherP.MedicalRecordNo
+	}
+
 	patient, err := p.PatientRepository.FindByNoMR(ctx, tx, inputId.MedicalRecordNo)
 	if err != nil {
 		return err
@@ -181,7 +194,7 @@ func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput
 		return custom.ErrMedicalRecordNotFound
 	}
 
-	dateOfBirth, err := helper.ParseToHour(inputData.DateOfBirth)
+	dateOfBirth, err := helper.ParseDate(inputData.DateOfBirth)
 	if err != nil {
 		return err
 	}
@@ -191,44 +204,45 @@ func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput
 		return err
 	}
 
-	patient = Patient{
-		PatientName:            inputData.PatientName,
-		Gender:                 inputData.Gender,
-		PlaceOfBirth:           inputData.PlaceOfBirth,
-		DateOfBirth:            dateOfBirth,
-		Address:                inputData.Address,
-		PhoneNumber:            inputData.PhoneNumber,
-		IdentityType:           inputData.IdentityType,
-		IdentityNumber:         inputData.IdentityNumber,
-		City:                   inputData.City,
-		PostalCode:             inputData.PostalCode,
-		MedicalRecordDate:      medicalRecordDate,
-		BirthWeight:            inputData.BirthWeight,
-		Ethnicity:              inputData.Ethnicity,
-		Subdistrict:            inputData.Subdistrict,
-		District:               inputData.District,
-		REGency:                inputData.REGency,
-		Province:               inputData.Province,
-		Citizenship:            inputData.Citizenship,
-		Country:                inputData.Country,
-		Language:               inputData.Language,
-		BloodType:              inputData.BloodType,
-		KKNumber:               inputData.KKNumber,
-		MaritalStatus:          inputData.MaritalStatus,
-		Religion:               inputData.Religion,
-		Occupation:             inputData.Occupation,
-		Education:              inputData.Education,
-		NPWP:                   inputData.NPWP,
-		FileLocation:           inputData.FileLocation,
-		RelativeName:           inputData.RelativeName,
-		RelativeRelationship:   inputData.RelativeRelationship,
-		RelativePhone:          inputData.RelativePhone,
-		RelativeIdentityNumber: inputData.RelativeIdentityNumber,
-		RelativeOccupation:     inputData.RelativeOccupation,
-		RelativeAddress:        inputData.RelativeAddress,
-		RelativeCity:           inputData.RelativeCity,
-		RelativePostalCode:     inputData.RelativePostalCode,
-		MotherMedicalRecordNo:  inputData.MotherMedicalRecordNo,
+	patient.PatientName = inputData.PatientName
+	patient.Gender = inputData.Gender
+	patient.PlaceOfBirth = inputData.PlaceOfBirth
+	patient.DateOfBirth = dateOfBirth
+	patient.Address = inputData.Address
+	patient.PhoneNumber = inputData.PhoneNumber
+	patient.IdentityType = inputData.IdentityType
+	patient.IdentityNumber = inputData.IdentityNumber
+	patient.City = inputData.City
+	patient.PostalCode = inputData.PostalCode
+	patient.MedicalRecordDate = medicalRecordDate
+	patient.BirthWeight = inputData.BirthWeight
+	patient.Ethnicity = inputData.Ethnicity
+	patient.Subdistrict = inputData.Subdistrict
+	patient.District = inputData.District
+	patient.REGency = inputData.REGency
+	patient.Province = inputData.Province
+	patient.Citizenship = inputData.Citizenship
+	patient.Country = inputData.Country
+	patient.Language = inputData.Language
+	patient.BloodType = inputData.BloodType
+	patient.KKNumber = inputData.KKNumber
+	patient.MaritalStatus = inputData.MaritalStatus
+	patient.Religion = inputData.Religion
+	patient.Occupation = inputData.Occupation
+	patient.Education = inputData.Education
+	patient.NPWP = inputData.NPWP
+	patient.FileLocation = inputData.FileLocation
+	patient.RelativeName = inputData.RelativeName
+	patient.RelativeRelationship = inputData.RelativeRelationship
+	patient.RelativePhone = inputData.RelativePhone
+	patient.RelativeIdentityNumber = inputData.RelativeIdentityNumber
+	patient.RelativeOccupation = inputData.RelativeOccupation
+	patient.RelativeAddress = inputData.RelativeAddress
+	patient.RelativeCity = inputData.RelativeCity
+	patient.RelativePostalCode = inputData.RelativePostalCode
+
+	if motherMedicalRecordNo != nil && motherMedicalRecordNo != patient.MotherMedicalRecordNo {
+		patient.MotherMedicalRecordNo = motherMedicalRecordNo
 	}
 
 	err = p.PatientRepository.Update(ctx, tx, patient)
