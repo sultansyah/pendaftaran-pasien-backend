@@ -1,0 +1,53 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+
+### Create
+POST {{baseUrl}}/doctors
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+{
+    "clinic_id": "POL04",
+    "doctor_name": "dr. Percobaan Nama 3",
+    "specialization": "ini percobaan create",
+    "days": "Senin, Selasa, Rabu",
+    "start_time": "08:45",
+    "end_time": "14:30",
+    "phone_number": "023182318219"
+}
+
+### Get ALl
+GET {{baseUrl}}/doctors
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+
+### Get By Doctor Id
+GET {{baseUrl}}/doctors/DR03
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+### Get By CLinic Id
+GET {{baseUrl}}/polyclinics/POL04/doctors
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+### Delete By Doctor Id
+DELETE {{baseUrl}}/doctors/DR03
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+### Update
+PUT {{baseUrl}}/doctors/DR02
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Content-Type: application/json
+
+{
+    "clinic_id": "POL04",
+    "doctor_name": "dr. Percobaan Ubah 3",
+    "specialization": "ini percobaan Ubah",
+    "days": "Senin, Selasa",
+    "start_time": "08:40",
+    "end_time": "14:25",
+    "phone_number": "0231823182213"
+}

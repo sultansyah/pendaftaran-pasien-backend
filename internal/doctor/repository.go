@@ -63,7 +63,7 @@ func (p *DoctorRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]Docto
 	var doctors []Doctor
 	for rows.Next() {
 		var doctor Doctor
-		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
 			return []Doctor{}, err
 		}
 		doctors = append(doctors, doctor)
@@ -83,7 +83,7 @@ func (p *DoctorRepositoryImpl) FindByClinicID(ctx context.Context, tx *sql.Tx, c
 	var doctors []Doctor
 	for rows.Next() {
 		var doctor Doctor
-		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
 			return []Doctor{}, err
 		}
 		doctors = append(doctors, doctor)
@@ -102,7 +102,7 @@ func (p *DoctorRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, doctorI
 
 	var doctor Doctor
 	if row.Next() {
-		if err := row.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+		if err := row.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
 			return Doctor{}, err
 		}
 		return doctor, nil
@@ -113,7 +113,7 @@ func (p *DoctorRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, doctorI
 
 func (p *DoctorRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, doctor Doctor) (Doctor, error) {
 	query := "INSERT INTO doctor(doctor_id, clinic_id, doctor_name, specialization, days, start_time, end_time, phone_number) VALUES (?,?,?,?,?,?,?,?)"
-	_, err := tx.ExecContext(ctx, query, doctor.DoctorID, doctor.ClinicID, doctor.DoctorID, doctor.DoctorName, doctor.Specialization, doctor.Days, doctor.StartTime, doctor.EndTime, doctor.PhoneNumber)
+	_, err := tx.ExecContext(ctx, query, doctor.DoctorID, doctor.ClinicID, doctor.DoctorName, doctor.Specialization, doctor.Days, doctor.StartTime, doctor.EndTime, doctor.PhoneNumber)
 	if err != nil {
 		return Doctor{}, err
 	}

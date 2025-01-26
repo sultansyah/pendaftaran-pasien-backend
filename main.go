@@ -79,7 +79,7 @@ func main() {
 	polyclinicHandler := polyclinic.NewPolyclinicHandler(polyclinicService)
 
 	doctorRepository := doctor.NewDoctorRepository()
-	doctorService := doctor.NewDoctorService(db, doctorRepository)
+	doctorService := doctor.NewDoctorService(db, doctorRepository, polyclinicRepository)
 	doctorHandler := doctor.NewDoctorHandler(doctorService)
 
 	api.POST("/auth/login", userHandler.Login)

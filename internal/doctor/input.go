@@ -1,21 +1,19 @@
 package doctor
 
-import "time"
-
 type CreateDoctorInput struct {
-	ClinicID       string    `json:"clinic_id"`
-	DoctorName     string    `json:"doctor_name"`
-	Specialization string    `json:"specialization"`
-	Days           string    `json:"days"`
-	StartTime      time.Time `json:"start_time"`
-	EndTime        time.Time `json:"end_time"`
-	PhoneNumber    *string   `json:"phone_number"`
+	ClinicID       string `json:"clinic_id" binding:"required"`
+	DoctorName     string `json:"doctor_name" binding:"required"`
+	Specialization string `json:"specialization" binding:"required"`
+	Days           string `json:"days" binding:"required"`
+	StartTime      string `json:"start_time" binding:"required"`
+	EndTime        string `json:"end_time" binding:"required"`
+	PhoneNumber    string `json:"phone_number" binding:"required"`
 }
 
 type GetDoctorInput struct {
-	DoctorID string `json:"doctor_id"`
+	DoctorID string `uri:"doctor_id" binding:"required"`
 }
 
 type GetDoctorByClinicInput struct {
-	ClinicID string `json:"clinic_id"`
+	ClinicID string `uri:"clinic_id" binding:"required"`
 }

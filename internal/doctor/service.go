@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"pendaftaran-pasien-backend/internal/custom"
 	"pendaftaran-pasien-backend/internal/helper"
+	"pendaftaran-pasien-backend/internal/polyclinic"
 )
 
 type DoctorService interface {
@@ -17,14 +19,16 @@ type DoctorService interface {
 }
 
 type DoctorServiceImpl struct {
-	DB               *sql.DB
-	DoctorRepository DoctorRepository
+	DB                   *sql.DB
+	DoctorRepository     DoctorRepository
+	PolyclinicRepository polyclinic.PolyclinicRepository
 }
 
-func NewDoctorService(DB *sql.DB, doctorRepository DoctorRepository) DoctorService {
+func NewDoctorService(DB *sql.DB, doctorRepository DoctorRepository, polyclinicRepository polyclinic.PolyclinicRepository) DoctorService {
 	return &DoctorServiceImpl{
-		DB:               DB,
-		DoctorRepository: doctorRepository,
+		DB:                   DB,
+		DoctorRepository:     doctorRepository,
+		PolyclinicRepository: polyclinicRepository,
 	}
 }
 
@@ -34,6 +38,14 @@ func (p *DoctorServiceImpl) Create(ctx context.Context, input CreateDoctorInput)
 		return Doctor{}, err
 	}
 	defer helper.HandleTransaction(tx, &err)
+
+	polyclinic, err := p.PolyclinicRepository.FindById(ctx, tx, input.ClinicID)
+	if err != nil && err != custom.ErrNotFound {
+		return Doctor{}, err
+	}
+	if err == custom.ErrNotFound || polyclinic.ClinicID == "" {
+		return Doctor{}, custom.ErrPolyclinicNotFound
+	}
 
 	totalRow, err := p.DoctorRepository.Count(ctx, tx)
 	if err != nil {
@@ -135,6 +147,14 @@ func (p *DoctorServiceImpl) Update(ctx context.Context, inputId GetDoctorInput, 
 		return err
 	}
 	defer helper.HandleTransaction(tx, &err)
+
+	polyclinic, err := p.PolyclinicRepository.FindById(ctx, tx, inputData.ClinicID)
+	if err != nil && err != custom.ErrNotFound {
+		return err
+	}
+	if err == custom.ErrNotFound || polyclinic.ClinicID == "" {
+		return custom.ErrPolyclinicNotFound
+	}
 
 	doctor, err := p.DoctorRepository.FindById(ctx, tx, inputId.DoctorID)
 	if err != nil {

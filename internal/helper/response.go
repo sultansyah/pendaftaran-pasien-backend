@@ -33,6 +33,10 @@ func HandleErrorResponde(c *gin.Context, err error) {
 		webResponse.Code = http.StatusNotFound
 		webResponse.Status = "error"
 		webResponse.Message = err.Error()
+	case custom.ErrPolyclinicNotFound:
+		webResponse.Code = http.StatusNotFound
+		webResponse.Status = "error"
+		webResponse.Message = err.Error()
 	case custom.ErrInternal:
 		webResponse.Code = http.StatusInternalServerError
 		webResponse.Status = "error"
