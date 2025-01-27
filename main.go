@@ -9,6 +9,7 @@ import (
 	"pendaftaran-pasien-backend/internal/middleware"
 	"pendaftaran-pasien-backend/internal/patient"
 	"pendaftaran-pasien-backend/internal/polyclinic"
+	"pendaftaran-pasien-backend/internal/queue"
 	"pendaftaran-pasien-backend/internal/register"
 	"pendaftaran-pasien-backend/internal/token"
 	"pendaftaran-pasien-backend/internal/transaction"
@@ -89,13 +90,17 @@ func main() {
 	patientService := patient.NewPatientService(db, patientRepository)
 	patientHandler := patient.NewPatientHandler(patientService)
 
-	registerRepository := register.NewRegisterRepository()
-	registerService := register.NewRegisterService(db, registerRepository, polyclinicRepository, doctorRepository, patientRepository)
-	registerHandler := register.NewRegisterHandler(registerService)
-
 	transactionRepository := transaction.NewTransactionRepository()
 	transactionService := transaction.NewTransactionService(db, transactionRepository)
 	transactionHandler := transaction.NewTransactionHandler(transactionService)
+
+	queueRepository := queue.NewQueueRepository()
+	queueService := queue.NewQueueService(db, queueRepository)
+	queueHandler := queue.NewQueueHandler(queueService)
+
+	registerRepository := register.NewRegisterRepository()
+	registerService := register.NewRegisterService(db, registerRepository, polyclinicRepository, doctorRepository, patientRepository, queueRepository, transactionRepository)
+	registerHandler := register.NewRegisterHandler(registerService)
 
 	api.POST("/auth/login", userHandler.Login)
 	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
@@ -132,6 +137,12 @@ func main() {
 	api.GET("/transactions/:transaction_id", middleware.AuthMiddleware(tokenService), transactionHandler.GetById)
 	api.GET("/patients/:medical_record_no/transactions", middleware.AuthMiddleware(tokenService), transactionHandler.GetByMedicalRecordNo)
 	api.PUT("/transactions/:transaction_id", middleware.AuthMiddleware(tokenService), transactionHandler.Update)
+
+	api.GET("/queues", middleware.AuthMiddleware(tokenService), queueHandler.GetAll)
+	api.GET("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.GetById)
+	api.GET("/queues/:day/day", middleware.AuthMiddleware(tokenService), queueHandler.GetAllByDay)
+	api.GET("/patients/:medical_record_no/queues", middleware.AuthMiddleware(tokenService), queueHandler.GetAllByMedicalRecordNo)
+	api.PUT("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.Update)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
