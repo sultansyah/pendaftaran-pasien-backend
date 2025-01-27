@@ -26,5 +26,5 @@ type GetTransactionInput struct {
 }
 
 type GetTransactionByMedicalRecordNoInput struct {
-	MedicalRecordNo int `uri:"medical_record_no"`
+	MedicalRecordNo string `uri:"medical_record_no"`
 }

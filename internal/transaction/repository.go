@@ -9,6 +9,7 @@ import (
 type TransactionRepository interface {
 	FindAll(ctx context.Context, tx *sql.Tx) ([]Transaction, error)
 	FindById(ctx context.Context, tx *sql.Tx, transactionId int) (Transaction, error)
+	FindByMedicalRecordNo(ctx context.Context, tx *sql.Tx, medicalRecordNo string) ([]Transaction, error)
 	Insert(ctx context.Context, tx *sql.Tx, transaction Transaction) (Transaction, error)
 	Update(ctx context.Context, tx *sql.Tx, transaction Transaction) error
 }
@@ -18,6 +19,32 @@ type TransactionRepositoryImpl struct {
 
 func NewTransactionRepository() TransactionRepository {
 	return &TransactionRepositoryImpl{}
+}
+
+func (t *TransactionRepositoryImpl) FindByMedicalRecordNo(ctx context.Context, tx *sql.Tx, medicalRecordNo string) ([]Transaction, error) {
+	query := `SELECT TR.transaction_id, TR.register_id, TR.registration_fee, TR.examination_fee, TR.total_fee, TR.discount, TR.total_payment, TR.payment_type, TR.payment_status, TR.created_at, TR.updated_at
+			FROM transactions as TR
+			INNER JOIN register AS RG ON TR.register_id = RG.register_id
+			INNER JOIN patient AS PT ON RG.medical_record_no = PT.medical_record_no
+			WHERE PT.medical_record_no = ?`
+
+	rows, err := tx.QueryContext(ctx, query, medicalRecordNo)
+	if err != nil {
+		return []Transaction{}, err
+	}
+	defer rows.Close()
+
+	var transactions []Transaction
+	for rows.Next() {
+		var transaction Transaction
+		if err := rows.Scan(&transaction.TransactionID, &transaction.RegisterID, &transaction.RegistrationFee, &transaction.ExaminationFee, &transaction.TotalFee, &transaction.Discount, &transaction.TotalPayment, &transaction.PaymentType, &transaction.PaymentStatus, &transaction.CreatedAt, &transaction.UpdatedAt); err != nil {
+			return []Transaction{}, err
+		}
+
+		transactions = append(transactions, transaction)
+	}
+
+	return transactions, nil
 }
 
 func (t *TransactionRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]Transaction, error) {
