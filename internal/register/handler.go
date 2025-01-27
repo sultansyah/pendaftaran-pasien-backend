@@ -125,12 +125,12 @@ func (r *RegisterHandlerImpl) Update(c *gin.Context) {
 		return
 	}
 
-	var inputData CreateRegisterInput
+	var inputData UpdateRegisterInput
 	if !helper.BindAndValidate(c, &inputData, "json") {
 		return
 	}
 
-	err := r.RegisterService.Update(c.Request.Context(), inputId, inputData)
+	register, err := r.RegisterService.Update(c.Request.Context(), inputId, inputData)
 	if err != nil {
 		helper.HandleErrorResponde(c, err)
 		return
@@ -140,6 +140,6 @@ func (r *RegisterHandlerImpl) Update(c *gin.Context) {
 		Code:    http.StatusOK,
 		Status:  "success",
 		Message: "success update data register",
-		Data:    "OK",
+		Data:    register,
 	})
 }

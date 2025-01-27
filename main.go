@@ -95,7 +95,7 @@ func main() {
 	transactionHandler := transaction.NewTransactionHandler(transactionService)
 
 	queueRepository := queue.NewQueueRepository()
-	queueService := queue.NewQueueService(db, queueRepository)
+	queueService := queue.NewQueueService(db, queueRepository, patientRepository)
 	queueHandler := queue.NewQueueHandler(queueService)
 
 	registerRepository := register.NewRegisterRepository()
@@ -128,7 +128,7 @@ func main() {
 
 	api.GET("/registers", middleware.AuthMiddleware(tokenService), registerHandler.GetAll)
 	api.GET("/registers/:register_id", middleware.AuthMiddleware(tokenService), registerHandler.GetById)
-	api.GET("/registers/:medical_record_no/latest", middleware.AuthMiddleware(tokenService), registerHandler.GetLatestByMRNo)
+	api.GET("/registers/latest/:medical_record_no/", middleware.AuthMiddleware(tokenService), registerHandler.GetLatestByMRNo)
 	api.POST("/registers", middleware.AuthMiddleware(tokenService), registerHandler.Create)
 	api.PUT("/registers/:register_id", middleware.AuthMiddleware(tokenService), registerHandler.Update)
 	api.DELETE("/registers/:register_id", middleware.AuthMiddleware(tokenService), registerHandler.Delete)
@@ -138,11 +138,8 @@ func main() {
 	api.GET("/patients/:medical_record_no/transactions", middleware.AuthMiddleware(tokenService), transactionHandler.GetByMedicalRecordNo)
 	api.PUT("/transactions/:transaction_id", middleware.AuthMiddleware(tokenService), transactionHandler.Update)
 
-	api.GET("/queues", middleware.AuthMiddleware(tokenService), queueHandler.GetAll)
+	api.GET("/queues", queueHandler.GetAll)
 	api.GET("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.GetById)
-	api.GET("/queues/:day/day", middleware.AuthMiddleware(tokenService), queueHandler.GetAllByDay)
-	api.GET("/patients/:medical_record_no/queues", middleware.AuthMiddleware(tokenService), queueHandler.GetAllByMedicalRecordNo)
-	api.PUT("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.Update)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)

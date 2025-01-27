@@ -11,13 +11,13 @@ GET {{baseUrl}}/transactions/1
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
-### Delete By Medical Record No
-DELETE {{baseUrl}}/patients/20250126193707002/transactions
+### Get By Medical Record No
+GET {{baseUrl}}/patients/20250126193707002/transactions
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 ### Update
-PUT {{baseUrl}}/transactions/POL03
+PUT {{baseUrl}}/transactions/1
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 

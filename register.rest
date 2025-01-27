@@ -1,0 +1,67 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+
+### Insert
+POST {{baseUrl}}/registers
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAsInVzZXJfaWQiOjF9.FMjkrL55Nc82mshD-isSkQo5-MIMZJsA05Bz8AqMIq0
+Content-Type: application/json
+
+{
+    "medical_record_no": "20250127160951000",
+    "session_polyclinic": "FULLDAY",
+    "clinic_id": "POL01",
+    "doctor_id": "DR01",
+    "department": "Rawat Jalan",
+    "class": "NON KELAS",
+    "entry_method": "Datang Sendiri",
+    "admission_fee": "Pendaftaran + Periksa Syaraf",
+    "medical_procedure": "Periksa Dokter Syaraf",
+    "registration_fee": 25.000,
+    "examination_fee": 145.000,
+    "total_fee": 170.000,
+    "discount": 0.00,
+    "total_payment": 170.000,
+    "payment_type": "CASH",
+    "payment_status": "UNPAID"
+}
+
+### Get ALl
+GET {{baseUrl}}/registers
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAsInVzZXJfaWQiOjF9.FMjkrL55Nc82mshD-isSkQo5-MIMZJsA05Bz8AqMIq0
+Content-Type: application/json
+
+### Get By Register ID
+GET {{baseUrl}}/registers/RG001
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAsInVzZXJfaWQiOjF9.FMjkrL55Nc82mshD-isSkQo5-MIMZJsA05Bz8AqMIq0
+Content-Type: application/json
+
+### Delete By Register ID
+DELETE {{baseUrl}}/registers/RG001
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAsInVzZXJfaWQiOjF9.FMjkrL55Nc82mshD-isSkQo5-MIMZJsA05Bz8AqMIq0
+Content-Type: application/json
+
+### Update
+PUT {{baseUrl}}/registers/RG002
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAsInVzZXJfaWQiOjF9.FMjkrL55Nc82mshD-isSkQo5-MIMZJsA05Bz8AqMIq0
+Content-Type: application/json
+
+{
+    "queue_id": 4,
+    "transaction_id": 2,
+    "medical_record_no": "20250127160951000",
+    "session_polyclinic": "Morning",
+    "clinic_id": "POL02",
+    "doctor_id": "DR01",
+    "department": "Rawat Jalan",
+    "class": "NON KELAS",
+    "entry_method": "Diantar",
+    "admission_fee": "Pendaftaran + Periksa Syaraf",
+    "medical_procedure": "Periksa Dokter Syaraf",
+    "registration_fee": 25.000,
+    "examination_fee": 145.000,
+    "total_fee": 170.000,
+    "discount": 0.00,
+    "total_payment": 170.000,
+    "payment_type": "CASH",
+    "payment_status": "UNPAID"
+}

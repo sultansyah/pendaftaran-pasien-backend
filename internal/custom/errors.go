@@ -7,6 +7,7 @@ import (
 var (
 	ErrAlreadyExists         = errors.New("resource already exists")
 	ErrNotFound              = errors.New("resource not found")
+	ErrRegisterNotFound      = errors.New("register number not found")
 	ErrPolyclinicNotFound    = errors.New("polyclinic not found")
 	ErrDoctorNotFound        = errors.New("doctor not found")
 	ErrMedicalRecordNotFound = errors.New("medical record not found")

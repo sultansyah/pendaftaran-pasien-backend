@@ -3,6 +3,7 @@ package register
 import (
 	"context"
 	"database/sql"
+	"pendaftaran-pasien-backend/internal/custom"
 	"pendaftaran-pasien-backend/internal/doctor"
 	"pendaftaran-pasien-backend/internal/helper"
 	"pendaftaran-pasien-backend/internal/patient"
@@ -16,7 +17,7 @@ type RegisterService interface {
 	GetById(ctx context.Context, input GetRegisterInput) (Register, error)
 	GetLatestByMRNo(ctx context.Context, input GetRegisterByMRNoInput) (Register, error)
 	Create(ctx context.Context, input CreateRegisterInput) (RegisterWithTransactionAndQueue, error)
-	Update(ctx context.Context, inputId GetRegisterInput, inputData CreateRegisterInput) error
+	Update(ctx context.Context, inputId GetRegisterInput, inputData UpdateRegisterInput) (RegisterWithTransactionAndQueue, error)
 	Delete(ctx context.Context, input GetRegisterInput) error
 }
 
@@ -49,17 +50,37 @@ func (r *RegisterServiceImpl) Create(ctx context.Context, input CreateRegisterIn
 	}
 	defer helper.HandleTransaction(tx, &err)
 
+	patient, err := r.PatientRepository.FindByNoMR(ctx, tx, input.MedicalRecordNo)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if patient.MedicalRecordNo == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrMedicalRecordNotFound
+	}
+
 	polyclinic, err := r.PolyclinicRepository.FindById(ctx, tx, input.ClinicID)
 	if err != nil {
 		return RegisterWithTransactionAndQueue{}, err
+	}
+	if polyclinic.ClinicID == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrPolyclinicNotFound
 	}
 
 	doctor, err := r.DoctorRepository.FindById(ctx, tx, input.DoctorID)
 	if err != nil {
 		return RegisterWithTransactionAndQueue{}, err
 	}
+	if doctor.DoctorID == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrDoctorNotFound
+	}
+
+	total, err := r.RegisterRepository.Count(ctx, tx)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
 
 	register := Register{
+		RegisterID:        helper.GenerateRegisterNo(total + 1),
 		MedicalRecordNo:   input.MedicalRecordNo,
 		SessionPolyclinic: input.SessionPolyclinic,
 		ClinicID:          polyclinic.ClinicID,
@@ -76,7 +97,20 @@ func (r *RegisterServiceImpl) Create(ctx context.Context, input CreateRegisterIn
 		return RegisterWithTransactionAndQueue{}, err
 	}
 
-	total, err := r.QueueRepository.CountQueueToday(ctx, tx, helper.ConvertTimeToDay(register.CreatedAt))
+	register, err = r.RegisterRepository.FindById(ctx, tx, register.RegisterID)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if register.RegisterID == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrNotFound
+	}
+
+	date, err := helper.ParseDatetimeToDate(register.CreatedAt)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+
+	total, err = r.QueueRepository.CountQueueByDay(ctx, tx, date)
 	if err != nil {
 		return RegisterWithTransactionAndQueue{}, err
 	}
@@ -107,7 +141,7 @@ func (r *RegisterServiceImpl) Create(ctx context.Context, input CreateRegisterIn
 		return RegisterWithTransactionAndQueue{}, err
 	}
 
-	return RegisterWithTransactionAndQueueFormatter(register, queue, transaction), nil
+	return RegisterWithTransactionAndQueueFormatter(register, queue, transaction, patient), nil
 }
 
 func (r *RegisterServiceImpl) Delete(ctx context.Context, input GetRegisterInput) error {
@@ -180,26 +214,43 @@ func (r *RegisterServiceImpl) GetLatestByMRNo(ctx context.Context, input GetRegi
 	return register, nil
 }
 
-func (r *RegisterServiceImpl) Update(ctx context.Context, inputId GetRegisterInput, inputData CreateRegisterInput) error {
+func (r *RegisterServiceImpl) Update(ctx context.Context, inputId GetRegisterInput, inputData UpdateRegisterInput) (RegisterWithTransactionAndQueue, error) {
 	tx, err := r.DB.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return RegisterWithTransactionAndQueue{}, err
 	}
 	defer helper.HandleTransaction(tx, &err)
 
 	register, err := r.RegisterRepository.FindById(ctx, tx, inputId.RegisterID)
 	if err != nil {
-		return err
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if register.RegisterID == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrRegisterNotFound
+	}
+
+	patient, err := r.PatientRepository.FindByNoMR(ctx, tx, inputData.MedicalRecordNo)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if patient.MedicalRecordNo == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrMedicalRecordNotFound
 	}
 
 	polyclinic, err := r.PolyclinicRepository.FindById(ctx, tx, inputData.ClinicID)
 	if err != nil {
-		return err
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if polyclinic.ClinicID == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrPolyclinicNotFound
 	}
 
 	doctor, err := r.DoctorRepository.FindById(ctx, tx, inputData.DoctorID)
 	if err != nil {
-		return err
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if doctor.DoctorID == "" {
+		return RegisterWithTransactionAndQueue{}, custom.ErrDoctorNotFound
 	}
 
 	register.MedicalRecordNo = inputData.MedicalRecordNo
@@ -214,8 +265,44 @@ func (r *RegisterServiceImpl) Update(ctx context.Context, inputId GetRegisterInp
 
 	err = r.RegisterRepository.Update(ctx, tx, register)
 	if err != nil {
-		return err
+		return RegisterWithTransactionAndQueue{}, err
 	}
 
-	return nil
+	transaction, err := r.TransactionRepository.FindById(ctx, tx, inputData.TransactionID)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if transaction.TransactionID <= 0 {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if transaction.RegisterID != register.RegisterID {
+		return RegisterWithTransactionAndQueue{}, custom.ErrUnauthorized
+	}
+
+	transaction.RegisterID = register.RegisterID
+	transaction.RegistrationFee = inputData.RegistrationFee
+	transaction.ExaminationFee = inputData.ExaminationFee
+	transaction.TotalFee = inputData.TotalFee
+	transaction.Discount = inputData.Discount
+	transaction.TotalPayment = inputData.TotalPayment
+	transaction.PaymentType = inputData.PaymentType
+	transaction.PaymentStatus = inputData.PaymentStatus
+
+	err = r.TransactionRepository.Update(ctx, tx, transaction)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+
+	queue, err := r.QueueRepository.FindById(ctx, tx, inputData.QueueID)
+	if err != nil {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if queue.QueueID <= 0 {
+		return RegisterWithTransactionAndQueue{}, err
+	}
+	if queue.RegisterID != register.RegisterID {
+		return RegisterWithTransactionAndQueue{}, custom.ErrUnauthorized
+	}
+
+	return RegisterWithTransactionAndQueueFormatter(register, queue, transaction, patient), nil
 }

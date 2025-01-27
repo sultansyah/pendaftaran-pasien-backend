@@ -9,8 +9,6 @@ import (
 
 type QueueHandler interface {
 	GetAll(c *gin.Context)
-	GetAllByDay(c *gin.Context)
-	GetAllByMedicalRecordNo(c *gin.Context)
 	GetById(c *gin.Context)
 	Update(c *gin.Context)
 }
@@ -24,47 +22,12 @@ func NewQueueHandler(queueService QueueService) QueueHandler {
 }
 
 func (q *QueueHandlerImpl) GetAll(c *gin.Context) {
-	queues, err := q.QueueService.GetAll(c.Request.Context())
-	if err != nil {
-		helper.HandleErrorResponde(c, err)
+	var input GetQueueInput
+	if !helper.BindAndValidate(c, &input, "query") {
 		return
 	}
 
-	helper.APIResponse(c, helper.WebResponse{
-		Code:    http.StatusOK,
-		Status:  "success",
-		Message: "success get all data queue",
-		Data:    queues,
-	})
-}
-
-func (q *QueueHandlerImpl) GetAllByDay(c *gin.Context) {
-	var input GetQueueByDayInput
-	if !helper.BindAndValidate(c, &input, "uri") {
-		return
-	}
-
-	queues, err := q.QueueService.GetAllByDay(c.Request.Context(), input)
-	if err != nil {
-		helper.HandleErrorResponde(c, err)
-		return
-	}
-
-	helper.APIResponse(c, helper.WebResponse{
-		Code:    http.StatusOK,
-		Status:  "success",
-		Message: "success get all data queue",
-		Data:    queues,
-	})
-}
-
-func (q *QueueHandlerImpl) GetAllByMedicalRecordNo(c *gin.Context) {
-	var input GetQueueByMedicalRecordNoInput
-	if !helper.BindAndValidate(c, &input, "uri") {
-		return
-	}
-
-	queues, err := q.QueueService.GetAllByMedicalRecordNo(c.Request.Context(), input)
+	queues, err := q.QueueService.GetAll(c.Request.Context(), input)
 	if err != nil {
 		helper.HandleErrorResponde(c, err)
 		return
@@ -79,7 +42,7 @@ func (q *QueueHandlerImpl) GetAllByMedicalRecordNo(c *gin.Context) {
 }
 
 func (q *QueueHandlerImpl) GetById(c *gin.Context) {
-	var input GetQueueInput
+	var input GetQueueByIdInput
 	if !helper.BindAndValidate(c, &input, "uri") {
 		return
 	}
@@ -99,7 +62,7 @@ func (q *QueueHandlerImpl) GetById(c *gin.Context) {
 }
 
 func (q *QueueHandlerImpl) Update(c *gin.Context) {
-	var inputId GetQueueInput
+	var inputId GetQueueByIdInput
 	if !helper.BindAndValidate(c, &inputId, "uri") {
 		return
 	}

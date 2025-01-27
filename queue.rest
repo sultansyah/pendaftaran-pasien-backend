@@ -2,36 +2,12 @@
 @baseUrl = http://localhost:8080/api/v1
 
 ### Get ALl
+### /queues?medical_record_no=12345&date=2025-01-27
 GET {{baseUrl}}/queues
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
-### Get By Transaction ID
+### Get By ID
 GET {{baseUrl}}/queues/1
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
-
-### Get By Day
-GET {{baseUrl}}/queues/Senin/day
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
-Content-Type: application/json
-
-### Delete By Medical Record No
-DELETE {{baseUrl}}/patients/20250126193707002/queues
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
-Content-Type: application/json
-
-### Update
-PUT {{baseUrl}}/queues/POL03
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
-Content-Type: application/json
-
-{
-    "registration_fee": 50000,
-    "examination_fee": 150000,
-    "total_fee": 200000,
-    "discount": 5000,
-    "total_payment": 195000,
-    "payment_type": "Cash",
-    "payment_status": "Lunas"
-}

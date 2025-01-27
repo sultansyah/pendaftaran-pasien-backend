@@ -90,10 +90,17 @@ func (t *TransactionRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, tr
 
 func (t *TransactionRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, transaction Transaction) (Transaction, error) {
 	query := "INSERT INTO transactions(register_id, registration_fee, examination_fee, total_fee, discount, total_payment, payment_type, payment_status) VALUES (?,?,?,?,?,?,?,?)"
-	_, err := tx.ExecContext(ctx, query, transaction.RegisterID, transaction.RegistrationFee, transaction.ExaminationFee, transaction.TotalFee, transaction.Discount, transaction.TotalPayment, transaction.PaymentType, transaction.PaymentStatus)
+	result, err := tx.ExecContext(ctx, query, transaction.RegisterID, transaction.RegistrationFee, transaction.ExaminationFee, transaction.TotalFee, transaction.Discount, transaction.TotalPayment, transaction.PaymentType, transaction.PaymentStatus)
 	if err != nil {
 		return Transaction{}, err
 	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return Transaction{}, err
+	}
+
+	transaction.TransactionID = int(id)
 
 	return transaction, nil
 }

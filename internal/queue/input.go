@@ -5,14 +5,14 @@ type UpdateQueueInput struct {
 	QueueNumber int    `json:"queue_number" binding:"required"`
 }
 
-type GetQueueInput struct {
+type GetQueueByIdInput struct {
 	QueueID int `uri:"queue_id" binding:"required"`
 }
 
-type GetQueueByMedicalRecordNoInput struct {
-	MedicalRecordNo string `uri:"medical_record_no" binding:"required"`
+type GetQueueInput struct {
+	MedicalRecordNo string `form:"medical_record_no"`
+	Date            string `form:"date"`
 }
 
 type GetQueueByDayInput struct {
-	Day string `uri:"day" binding:"required"`
 }

@@ -1,6 +1,6 @@
 CREATE TABLE register (
     register_id VARCHAR(10) PRIMARY KEY,
-    medical_record_no VARCHAR(15),
+    medical_record_no VARCHAR(50),
     session_polyclinic VARCHAR(20),
     clinic_id VARCHAR(10),
     doctor_id VARCHAR(10),

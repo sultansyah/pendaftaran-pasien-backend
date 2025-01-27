@@ -13,6 +13,7 @@ type RegisterRepository interface {
 	Insert(ctx context.Context, tx *sql.Tx, register Register) (Register, error)
 	Update(ctx context.Context, tx *sql.Tx, register Register) error
 	Delete(ctx context.Context, tx *sql.Tx, registerId string) error
+	Count(ctx context.Context, tx *sql.Tx) (int, error)
 }
 
 type RegisterRepositoryImpl struct {
@@ -22,9 +23,29 @@ func NewRegisterRepository() RegisterRepository {
 	return &RegisterRepositoryImpl{}
 }
 
+func (r *RegisterRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, error) {
+	query := "SELECT COUNT(register_id) AS total from register"
+	row, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		return -1, err
+	}
+	defer row.Close()
+
+	var total int
+	if row.Next() {
+		if err := row.Scan(&total); err != nil {
+			return -1, err
+		}
+
+		return total, nil
+	}
+
+	return -1, custom.ErrNotFound
+}
+
 func (r *RegisterRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, registerId string) error {
 	query := "UPDATE register SET is_deleted=? WHERE register_id = ? AND is_deleted = 0"
-	_, err := tx.ExecContext(ctx, query, registerId)
+	_, err := tx.ExecContext(ctx, query, 1, registerId)
 	if err != nil {
 		return err
 	}

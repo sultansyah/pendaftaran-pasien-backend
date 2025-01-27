@@ -34,3 +34,14 @@ func ParseToHour(hour string) (time.Time, error) {
 
 	return parsedTime, nil
 }
+
+func ParseDatetimeToDate(dateTime time.Time) (time.Time, error) {
+	layout := "2006-01-02"
+	dateString := dateTime.Format(layout)
+	parsedDate, err := time.Parse(layout, dateString)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return parsedDate, nil
+}

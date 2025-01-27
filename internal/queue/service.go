@@ -3,37 +3,56 @@ package queue
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"pendaftaran-pasien-backend/internal/custom"
 	"pendaftaran-pasien-backend/internal/helper"
+	"pendaftaran-pasien-backend/internal/patient"
 )
 
 type QueueService interface {
-	GetAll(ctx context.Context) ([]Queue, error)
-	GetAllByDay(ctx context.Context, input GetQueueByDayInput) ([]Queue, error)
-	GetAllByMedicalRecordNo(ctx context.Context, input GetQueueByMedicalRecordNoInput) ([]Queue, error)
-	GetById(ctx context.Context, input GetQueueInput) (Queue, error)
-	Update(ctx context.Context, inputId GetQueueInput, inputData UpdateQueueInput) error
+	GetAll(ctx context.Context, input GetQueueInput) ([]Queue, error)
+	GetById(ctx context.Context, input GetQueueByIdInput) (Queue, error)
+	Update(ctx context.Context, inputId GetQueueByIdInput, inputData UpdateQueueInput) error
 }
 
 type QueueServiceImpl struct {
-	DB              *sql.DB
-	QueueRepository QueueRepository
+	DB                *sql.DB
+	QueueRepository   QueueRepository
+	PatientRepository patient.PatientRepository
 }
 
-func NewQueueService(DB *sql.DB, queueRepository QueueRepository) QueueService {
+func NewQueueService(DB *sql.DB, queueRepository QueueRepository, patientRepository patient.PatientRepository) QueueService {
 	return &QueueServiceImpl{
-		DB:              DB,
-		QueueRepository: queueRepository,
+		DB:                DB,
+		QueueRepository:   queueRepository,
+		PatientRepository: patientRepository,
 	}
 }
 
-func (t *QueueServiceImpl) GetAll(ctx context.Context) ([]Queue, error) {
+func (t *QueueServiceImpl) GetAll(ctx context.Context, input GetQueueInput) ([]Queue, error) {
 	tx, err := t.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return []Queue{}, err
 	}
 	defer helper.HandleTransaction(tx, &err)
 
-	queues, err := t.QueueRepository.FindAll(ctx, tx)
+	filters := helper.GenerateFilter(input)
+	fmt.Println("filters = ", filters)
+
+	if medicalRecordNo, ok := filters["medical_record_no"]; ok {
+		fmt.Println("halo")
+		medicalRecordNo, ok := medicalRecordNo.(string)
+		if !ok {
+			return []Queue{}, custom.ErrInternal
+		}
+
+		_, err := t.PatientRepository.FindByNoMR(ctx, tx, medicalRecordNo)
+		if err != nil {
+			return []Queue{}, err
+		}
+	}
+
+	queues, err := t.QueueRepository.FindQueues(ctx, tx, filters)
 	if err != nil {
 		return []Queue{}, err
 	}
@@ -41,42 +60,7 @@ func (t *QueueServiceImpl) GetAll(ctx context.Context) ([]Queue, error) {
 	return queues, nil
 }
 
-func (t *QueueServiceImpl) GetAllByDay(ctx context.Context, input GetQueueByDayInput) ([]Queue, error) {
-	tx, err := t.DB.BeginTx(ctx, nil)
-	if err != nil {
-		return []Queue{}, err
-	}
-	defer helper.HandleTransaction(tx, &err)
-
-	day, err := helper.ConvertDayToEnglish(input.Day)
-	if err != nil {
-		return []Queue{}, err
-	}
-
-	queues, err := t.QueueRepository.FindByDay(ctx, tx, day)
-	if err != nil {
-		return []Queue{}, err
-	}
-
-	return queues, nil
-}
-
-func (t *QueueServiceImpl) GetAllByMedicalRecordNo(ctx context.Context, input GetQueueByMedicalRecordNoInput) ([]Queue, error) {
-	tx, err := t.DB.BeginTx(ctx, nil)
-	if err != nil {
-		return []Queue{}, err
-	}
-	defer helper.HandleTransaction(tx, &err)
-
-	queues, err := t.QueueRepository.FindByMedicalRecordNo(ctx, tx, input.MedicalRecordNo)
-	if err != nil {
-		return []Queue{}, err
-	}
-
-	return queues, nil
-}
-
-func (t *QueueServiceImpl) GetById(ctx context.Context, input GetQueueInput) (Queue, error) {
+func (t *QueueServiceImpl) GetById(ctx context.Context, input GetQueueByIdInput) (Queue, error) {
 	tx, err := t.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return Queue{}, err
@@ -87,11 +71,14 @@ func (t *QueueServiceImpl) GetById(ctx context.Context, input GetQueueInput) (Qu
 	if err != nil {
 		return Queue{}, err
 	}
+	if queue.QueueID <= 0 {
+		return Queue{}, custom.ErrNotFound
+	}
 
 	return queue, nil
 }
 
-func (t *QueueServiceImpl) Update(ctx context.Context, inputId GetQueueInput, inputData UpdateQueueInput) error {
+func (t *QueueServiceImpl) Update(ctx context.Context, inputId GetQueueByIdInput, inputData UpdateQueueInput) error {
 	tx, err := t.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -101,6 +88,9 @@ func (t *QueueServiceImpl) Update(ctx context.Context, inputId GetQueueInput, in
 	queue, err := t.QueueRepository.FindById(ctx, tx, inputId.QueueID)
 	if err != nil {
 		return err
+	}
+	if queue.QueueID <= 0 {
+		return custom.ErrNotFound
 	}
 
 	queue.RegisterID = inputData.RegisterID

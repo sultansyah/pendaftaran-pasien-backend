@@ -7,7 +7,7 @@ Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIs
 Content-Type: application/json
 
 {
-    "clinic_id": "POL04",
+    "clinic_id": "POL02",
     "doctor_name": "dr. Percobaan Nama 3",
     "specialization": "ini percobaan create",
     "days": "Sabtu",

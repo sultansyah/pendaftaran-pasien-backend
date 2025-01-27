@@ -47,6 +47,13 @@ func BindAndValidate(c *gin.Context, input any, bind string) bool {
 			return false
 		}
 		return true
+	case "query":
+		if err := c.ShouldBindQuery(input); err != nil {
+			webResponse.Data = err.Error()
+			APIResponse(c, webResponse)
+			return false
+		}
+		return true
 	default:
 		return false
 	}
