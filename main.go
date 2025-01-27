@@ -94,7 +94,7 @@ func main() {
 	registerHandler := register.NewRegisterHandler(registerService)
 
 	transactionRepository := transaction.NewTransactionRepository()
-	transactionService := transaction.NewTransactionService(db, transactionRepository, polyclinicRepository, doctorRepository, patientRepository)
+	transactionService := transaction.NewTransactionService(db, transactionRepository)
 	transactionHandler := transaction.NewTransactionHandler(transactionService)
 
 	api.POST("/auth/login", userHandler.Login)
