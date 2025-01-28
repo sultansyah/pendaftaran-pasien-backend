@@ -24,7 +24,7 @@ func (t *TokenServiceImpl) GenerateToken(userId int) (string, string, error) {
 	// berlaku 3 hari
 	accessClaims := jwt.MapClaims{
 		"user_id": userId,
-		"exp":     time.Now().Add(time.Second * 60).Unix(),
+		"exp":     time.Now().Add(time.Hour * 24 * 3).Unix(),
 	}
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)

@@ -42,8 +42,8 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("auth_token", accessToken, 60, "/", "", false, true)
-	c.SetCookie("refresh_token", refreshToken, 36000, "/", "", false, true)
+	c.SetCookie("auth_token", accessToken, 259200, "/", "", false, true)      // 3 hari
+	c.SetCookie("refresh_token", refreshToken, 2592000, "/", "", false, true) // 30 hari
 
 	helper.APIResponse(c, helper.WebResponse{
 		Code:    http.StatusOK,
@@ -98,7 +98,7 @@ func (u *UserHandlerImpl) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("auth_token", newAccessToken, 60, "/", "", false, true)
+	c.SetCookie("auth_token", newAccessToken, 259200, "/", "", false, true) // 3 hari
 
 	helper.APIResponse(c, helper.WebResponse{
 		Code:    http.StatusOK,
