@@ -10,7 +10,7 @@ import (
 )
 
 type UserService interface {
-	Login(ctx context.Context, input LoginUserInput) (User, string, error)
+	Login(ctx context.Context, input LoginUserInput) (User, string, string, error)
 	UpdatePassword(ctx context.Context, input UpdatePasswordUserInput) error
 }
 
@@ -30,12 +30,12 @@ func NewUserService(DB *sql.DB, userRepository UserRepository, tokenService toke
 	}
 }
 
-func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserInput) (User, string, error) {
+func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserInput) (User, string, string, error) {
 	isLoginSuccess := false
 
 	tx, err := u.DB.Begin()
 	if err != nil {
-		return User{}, "", err
+		return User{}, "", "", err
 	}
 	defer helper.HandleTransaction(tx, &err)
 
@@ -46,15 +46,15 @@ func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserInput) (User
 
 	user, err = u.UserRepository.FindByCodeAndName(ctx, tx, user)
 	if err != nil && err != custom.ErrNotFound {
-		return User{}, "", err
+		return User{}, "", "", err
 	}
 	if err == custom.ErrNotFound || user.Id <= 0 {
-		return User{}, "", custom.ErrInvalidCredentials
+		return User{}, "", "", custom.ErrInvalidCredentials
 	}
 
 	date, err := helper.ParseDateTimeLocal(input.Date)
 	if err != nil {
-		return User{}, "", err
+		return User{}, "", "", err
 	}
 
 	defer func() {
@@ -69,20 +69,20 @@ func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserInput) (User
 
 	isSame, err := helper.ComparePassword(user.Password, input.Password)
 	if err != nil {
-		return User{}, "", err
+		return User{}, "", "", err
 	}
 	if !isSame {
-		return User{}, "", custom.ErrUnauthorized
+		return User{}, "", "", custom.ErrUnauthorized
 	}
 
-	token, err := u.TokenService.GenerateToken(user.Id)
+	accessToken, refreshToken, err := u.TokenService.GenerateToken(user.Id)
 	if err != nil {
-		return User{}, "", err
+		return User{}, "", "", err
 	}
 
 	isLoginSuccess = true
 
-	return user, token, nil
+	return user, accessToken, refreshToken, nil
 }
 
 func (u *UserServiceImpl) UpdatePassword(ctx context.Context, input UpdatePasswordUserInput) error {

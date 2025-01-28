@@ -5,6 +5,7 @@ import "time"
 type Doctor struct {
 	DoctorID       string    `json:"doctor_id"`
 	ClinicID       string    `json:"clinic_id"`
+	ClinicName     string    `json:"clinic_name"`
 	DoctorName     string    `json:"doctor_name"`
 	Specialization string    `json:"specialization"`
 	Days           string    `json:"days"`

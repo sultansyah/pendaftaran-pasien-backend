@@ -2,23 +2,31 @@ package user
 
 import (
 	"net/http"
+	"pendaftaran-pasien-backend/internal/custom"
 	"pendaftaran-pasien-backend/internal/helper"
+	"pendaftaran-pasien-backend/internal/token"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 type UserHandler interface {
 	Login(c *gin.Context)
+	RefreshToken(c *gin.Context)
 	Logout(c *gin.Context)
 	UpdatePassword(c *gin.Context)
 }
 
 type UserHandlerImpl struct {
-	UserService UserService
+	UserService  UserService
+	TokenService token.TokenService
 }
 
-func NewUserHandler(userService UserService) UserHandler {
-	return &UserHandlerImpl{UserService: userService}
+func NewUserHandler(userService UserService, tokenService token.TokenService) UserHandler {
+	return &UserHandlerImpl{
+		UserService:  userService,
+		TokenService: tokenService,
+	}
 }
 
 func (u *UserHandlerImpl) Login(c *gin.Context) {
@@ -28,13 +36,14 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 		return
 	}
 
-	user, token, err := u.UserService.Login(c.Request.Context(), input)
+	user, accessToken, refreshToken, err := u.UserService.Login(c.Request.Context(), input)
 	if err != nil {
 		helper.HandleErrorResponde(c, err)
 		return
 	}
 
-	c.SetCookie("auth_token", token, 3600, "/", "", false, true)
+	c.SetCookie("auth_token", accessToken, 60, "/", "", false, true)
+	c.SetCookie("refresh_token", refreshToken, 36000, "/", "", false, true)
 
 	helper.APIResponse(c, helper.WebResponse{
 		Code:    http.StatusOK,
@@ -44,8 +53,64 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 	})
 }
 
+func (u *UserHandlerImpl) RefreshToken(c *gin.Context) {
+	// ambil refresh token dari cookie
+	tokenString, err := c.Cookie("refresh_token")
+	if err != nil {
+		// jika tidak ada refresh token, kirimkan error
+		c.SetCookie("auth_token", "", -1, "/", "", false, true)
+		c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+		helper.HandleErrorResponde(c, custom.ErrUnauthorized)
+		return
+	}
+
+	refreshToken, err := u.TokenService.ValidateToken(tokenString)
+	if err != nil {
+		c.SetCookie("auth_token", "", -1, "/", "", false, true)
+		c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+		helper.HandleErrorResponde(c, err)
+		return
+	}
+
+	// ambil claims
+	claims, ok := refreshToken.Claims.(jwt.MapClaims)
+	if !ok || !refreshToken.Valid {
+		c.SetCookie("auth_token", "", -1, "/", "", false, true)
+		c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+		helper.HandleErrorResponde(c, custom.ErrUnauthorized)
+		c.Abort()
+		return
+	}
+
+	// ambil user_id dari refresh token
+	userId, ok := claims["user_id"].(float64)
+	if !ok {
+		c.SetCookie("auth_token", "", -1, "/", "", false, true)
+		c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+		helper.HandleErrorResponde(c, custom.ErrUnauthorized)
+		c.Abort()
+		return
+	}
+
+	newAccessToken, _, err := u.TokenService.GenerateToken(int(userId))
+	if err != nil {
+		helper.HandleErrorResponde(c, err)
+		return
+	}
+
+	c.SetCookie("auth_token", newAccessToken, 60, "/", "", false, true)
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "refresh token success",
+		Data:    "OK",
+	})
+}
+
 func (u *UserHandlerImpl) Logout(c *gin.Context) {
 	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
 
 	helper.APIResponse(c, helper.WebResponse{
 		Code:    http.StatusOK,

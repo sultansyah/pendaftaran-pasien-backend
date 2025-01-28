@@ -46,6 +46,14 @@ func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInpu
 		motherMedicalRecordNo = &motherP.MedicalRecordNo
 	}
 
+	identityNumber, err := p.PatientRepository.FindByIdentityNumber(ctx, tx, input.IdentityNumber)
+	if err != nil {
+		return Patient{}, err
+	}
+	if identityNumber.MedicalRecordNo != "" && err != custom.ErrIdentityNumberNotFound {
+		return Patient{}, custom.ErrIdentityNumberAlreadyExists
+	}
+
 	total, err := p.PatientRepository.Count(ctx, tx)
 	if err != nil {
 		return Patient{}, err

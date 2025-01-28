@@ -9,6 +9,7 @@ import (
 
 type PatientRepository interface {
 	FindByNoMR(ctx context.Context, tx *sql.Tx, medicalRecordNo string) (Patient, error)
+	FindByIdentityNumber(ctx context.Context, tx *sql.Tx, identityNumber string) (Patient, error)
 	Find(ctx context.Context, tx *sql.Tx, filters map[string]any) ([]Patient, error)
 	Insert(ctx context.Context, tx *sql.Tx, patient Patient) (Patient, error)
 	Update(ctx context.Context, tx *sql.Tx, patient Patient) error
@@ -68,8 +69,9 @@ func (p *PatientRepositoryImpl) Find(ctx context.Context, tx *sql.Tx, filters ma
 	}
 
 	// combine where conditions
-	where := " AND "
+	where := ""
 	if len(whereConditions) > 0 {
+		where += " AND "
 		where += strings.Join(whereConditions, " AND ")
 	}
 
@@ -113,6 +115,26 @@ func (p *PatientRepositoryImpl) FindByNoMR(ctx context.Context, tx *sql.Tx, medi
 	}
 
 	return patient, custom.ErrMedicalRecordNotFound
+}
+
+func (p *PatientRepositoryImpl) FindByIdentityNumber(ctx context.Context, tx *sql.Tx, identityNumber string) (Patient, error) {
+	query := "SELECT medical_record_no, patient_name, gender, place_of_birth, date_of_birth, address, phone_number, identity_type, identity_number, city, postal_code, medical_record_date, birth_weight, ethnicity, subdistrict, district, regency, province, citizenship, country, language, blood_type, KK_number, marital_status, religion, occupation, education, npwp, file_location, relative_name, relative_relationship, relative_phone, relative_identity_number, relative_occupation, relative_address, relative_city, relative_postal_code, mother_medical_record_no, created_at, updated_at FROM patient where identity_number = ? AND is_deleted = 0"
+	row, err := tx.QueryContext(ctx, query, identityNumber)
+	if err != nil {
+		return Patient{}, err
+	}
+	defer row.Close()
+
+	var patient Patient
+	if row.Next() {
+		if err := row.Scan(&patient.MedicalRecordNo, &patient.PatientName, &patient.Gender, &patient.PlaceOfBirth, &patient.DateOfBirth, &patient.Address, &patient.PhoneNumber, &patient.IdentityType, &patient.IdentityNumber, &patient.City, &patient.PostalCode, &patient.MedicalRecordDate, &patient.BirthWeight, &patient.Ethnicity, &patient.Subdistrict, &patient.District, &patient.REGency, &patient.Province, &patient.Citizenship, &patient.Country, &patient.Language, &patient.BloodType, &patient.KKNumber, &patient.MaritalStatus, &patient.Religion, &patient.Occupation, &patient.Education, &patient.NPWP, &patient.FileLocation, &patient.RelativeName, &patient.RelativeRelationship, &patient.RelativePhone, &patient.RelativeIdentityNumber, &patient.RelativeOccupation, &patient.RelativeAddress, &patient.RelativeCity, &patient.RelativePostalCode, &patient.MotherMedicalRecordNo, &patient.CreatedAt, &patient.UpdatedAt); err != nil {
+			return Patient{}, err
+		}
+
+		return patient, nil
+	}
+
+	return patient, custom.ErrIdentityNumberNotFound
 }
 
 func (p *PatientRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, patient Patient) (Patient, error) {

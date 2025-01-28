@@ -76,7 +76,7 @@ func main() {
 
 	userRepository := user.NewUserRepository()
 	userService := user.NewUserService(db, userRepository, tokenService, loginHistoryRepository)
-	userHandler := user.NewUserHandler(userService)
+	userHandler := user.NewUserHandler(userService, tokenService)
 
 	polyclinicRepository := polyclinic.NewPolyclinicRepository()
 	polyclinicService := polyclinic.NewPolyclinicService(db, polyclinicRepository)
@@ -103,7 +103,8 @@ func main() {
 	registerHandler := register.NewRegisterHandler(registerService)
 
 	api.POST("/auth/login", userHandler.Login)
-	api.POST("/auth/logout", userHandler.Logout)
+	api.POST("/auth/logout", middleware.AuthMiddleware(tokenService), userHandler.Logout)
+	api.POST("/auth/refresh-token", userHandler.RefreshToken)
 	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
 
 	api.GET("/polyclinics", middleware.AuthMiddleware(tokenService), polyclinicHandler.GetAll)
@@ -141,7 +142,7 @@ func main() {
 	api.GET("/queues", queueHandler.GetAll)
 	api.GET("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.GetById)
 
-	if err := router.Run(); err != nil {
+	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
 }

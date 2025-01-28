@@ -49,8 +49,8 @@ Content-Type: application/json
 }
 
 ### Get ALl
-### /patients?medical_record_no=12345&identity_number=2025-01-27
-GET {{baseUrl}}/patients?identity_number=00219213010000
+### /patients?medical_record_no=12345&identity_number=02192120319
+GET {{baseUrl}}/patients
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
