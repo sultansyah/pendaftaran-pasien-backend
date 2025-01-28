@@ -94,7 +94,7 @@ WHERE LOWER(d.days) LIKE ? AND d.clinic_id = ? AND d.is_deleted = 0`
 	var doctors []Doctor
 	for rows.Next() {
 		var doctor Doctor
-		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.ClinicName, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
 			return []Doctor{}, err
 		}
 		doctors = append(doctors, doctor)
@@ -118,7 +118,7 @@ WHERE d.clinic_id = ? AND d.is_deleted = 0`
 	var doctors []Doctor
 	for rows.Next() {
 		var doctor Doctor
-		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+		if err := rows.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.ClinicName, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
 			return []Doctor{}, err
 		}
 		doctors = append(doctors, doctor)
@@ -141,7 +141,7 @@ WHERE d.doctor_id = ? AND d.is_deleted = 0`
 
 	var doctor Doctor
 	if row.Next() {
-		if err := row.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
+		if err := row.Scan(&doctor.DoctorID, &doctor.ClinicID, &doctor.ClinicName, &doctor.DoctorName, &doctor.Specialization, &doctor.Days, &doctor.StartTime, &doctor.EndTime, &doctor.PhoneNumber, &doctor.CreatedAt, &doctor.UpdatedAt); err != nil {
 			return Doctor{}, err
 		}
 		return doctor, nil
