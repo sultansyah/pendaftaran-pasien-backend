@@ -8,8 +8,7 @@ import (
 )
 
 type PatientService interface {
-	GetAll(ctx context.Context) ([]Patient, error)
-	GetByNoMR(ctx context.Context, input GetPatientInput) (Patient, error)
+	GetAll(ctx context.Context, input GetPatientInput) ([]Patient, error)
 	Create(ctx context.Context, input CreatePatientInput) (Patient, error)
 	Update(ctx context.Context, inputId GetPatientInput, inputData CreatePatientInput) error
 	Delete(ctx context.Context, input GetPatientInput) error
@@ -136,34 +135,33 @@ func (p *PatientServiceImpl) Delete(ctx context.Context, input GetPatientInput) 
 	return nil
 }
 
-func (p *PatientServiceImpl) GetAll(ctx context.Context) ([]Patient, error) {
+func (p *PatientServiceImpl) GetAll(ctx context.Context, input GetPatientInput) ([]Patient, error) {
 	tx, err := p.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return []Patient{}, err
 	}
 	defer helper.HandleTransaction(tx, &err)
 
-	patients, err := p.PatientRepository.FindAll(ctx, tx)
+	filters := helper.GenerateFilter(input)
+
+	if medicalRecordNo, ok := filters["medical_record_no"]; ok {
+		medicalRecordNo, ok := medicalRecordNo.(string)
+		if !ok {
+			return []Patient{}, custom.ErrInternal
+		}
+
+		_, err := p.PatientRepository.FindByNoMR(ctx, tx, medicalRecordNo)
+		if err != nil {
+			return []Patient{}, err
+		}
+	}
+
+	patients, err := p.PatientRepository.Find(ctx, tx, filters)
 	if err != nil {
 		return []Patient{}, err
 	}
 
 	return patients, nil
-}
-
-func (p *PatientServiceImpl) GetByNoMR(ctx context.Context, input GetPatientInput) (Patient, error) {
-	tx, err := p.DB.BeginTx(ctx, nil)
-	if err != nil {
-		return Patient{}, err
-	}
-	defer helper.HandleTransaction(tx, &err)
-
-	patient, err := p.PatientRepository.FindByNoMR(ctx, tx, input.MedicalRecordNo)
-	if err != nil {
-		return Patient{}, err
-	}
-
-	return patient, nil
 }
 
 func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput, inputData CreatePatientInput) error {

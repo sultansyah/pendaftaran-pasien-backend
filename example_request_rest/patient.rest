@@ -49,13 +49,9 @@ Content-Type: application/json
 }
 
 ### Get ALl
-GET {{baseUrl}}/patients
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
-Content-Type: application/json
-
-### Get By Medical Record No
-GET {{baseUrl}}/patients/20250126192627001
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+### /patients?medical_record_no=12345&identity_number=2025-01-27
+GET {{baseUrl}}/patients?identity_number=00219213010000
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 ### Delete By Medical Record No

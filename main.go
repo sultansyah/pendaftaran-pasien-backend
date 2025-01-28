@@ -122,7 +122,6 @@ func main() {
 	api.DELETE("/doctors/:doctor_id", middleware.AuthMiddleware(tokenService), doctorHandler.Delete)
 
 	api.GET("/patients", middleware.AuthMiddleware(tokenService), patientHandler.GetAll)
-	api.GET("/patients/:medical_record_no", middleware.AuthMiddleware(tokenService), patientHandler.GetByNoMR)
 	api.POST("/patients", middleware.AuthMiddleware(tokenService), patientHandler.Create)
 	api.PUT("/patients/:medical_record_no", middleware.AuthMiddleware(tokenService), patientHandler.Update)
 	api.DELETE("/patients/:medical_record_no", middleware.AuthMiddleware(tokenService), patientHandler.Delete)

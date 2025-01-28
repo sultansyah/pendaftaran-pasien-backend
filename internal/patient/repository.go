@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"pendaftaran-pasien-backend/internal/custom"
+	"strings"
 )
 
 type PatientRepository interface {
 	FindByNoMR(ctx context.Context, tx *sql.Tx, medicalRecordNo string) (Patient, error)
-	FindAll(ctx context.Context, tx *sql.Tx) ([]Patient, error)
+	Find(ctx context.Context, tx *sql.Tx, filters map[string]any) ([]Patient, error)
 	Insert(ctx context.Context, tx *sql.Tx, patient Patient) (Patient, error)
 	Update(ctx context.Context, tx *sql.Tx, patient Patient) error
 	Delete(ctx context.Context, tx *sql.Tx, medicalRecordNo string) error
@@ -51,9 +52,31 @@ func (p *PatientRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, medicalR
 	return nil
 }
 
-func (p *PatientRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) ([]Patient, error) {
+func (p *PatientRepositoryImpl) Find(ctx context.Context, tx *sql.Tx, filters map[string]any) ([]Patient, error) {
 	query := "SELECT medical_record_no, patient_name, gender, place_of_birth, date_of_birth, address, phone_number, identity_type, identity_number, city, postal_code, medical_record_date, birth_weight, ethnicity, subdistrict, district, regency, province, citizenship, country, language, blood_type, KK_number, marital_status, religion, occupation, education, npwp, file_location, relative_name, relative_relationship, relative_phone, relative_identity_number, relative_occupation, relative_address, relative_city, relative_postal_code, mother_medical_record_no, created_at, updated_at FROM patient WHERE is_deleted = 0"
-	rows, err := tx.QueryContext(ctx, query)
+	whereConditions := []string{}
+	args := []any{}
+
+	// filters
+	if medicalRecordNo, ok := filters["medical_record_no"]; ok {
+		whereConditions = append(whereConditions, "medical_record_no = ?")
+		args = append(args, medicalRecordNo)
+	}
+	if identityNumber, ok := filters["identity_number"]; ok {
+		whereConditions = append(whereConditions, "identity_number = ?")
+		args = append(args, identityNumber)
+	}
+
+	// combine where conditions
+	where := " AND "
+	if len(whereConditions) > 0 {
+		where += strings.Join(whereConditions, " AND ")
+	}
+
+	// combine all
+	query = query + where
+
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return []Patient{}, err
 	}

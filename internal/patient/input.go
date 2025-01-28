@@ -43,5 +43,6 @@ type CreatePatientInput struct {
 }
 
 type GetPatientInput struct {
-	MedicalRecordNo string `uri:"medical_record_no" binding:"required"`
+	MedicalRecordNo string `form:"medical_record_no"`
+	IdentityNumber  string `form:"identity_number"`
 }

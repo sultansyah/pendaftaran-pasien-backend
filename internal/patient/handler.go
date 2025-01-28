@@ -9,7 +9,6 @@ import (
 
 type PatientHandler interface {
 	GetAll(c *gin.Context)
-	GetByNoMR(c *gin.Context)
 	Create(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
@@ -64,7 +63,12 @@ func (p *PatientHandlerImpl) Delete(c *gin.Context) {
 }
 
 func (p *PatientHandlerImpl) GetAll(c *gin.Context) {
-	patients, err := p.PatientService.GetAll(c.Request.Context())
+	var input GetPatientInput
+	if !helper.BindAndValidate(c, &input, "form") {
+		return
+	}
+
+	patients, err := p.PatientService.GetAll(c.Request.Context(), input)
 	if err != nil {
 		helper.HandleErrorResponde(c, err)
 		return
@@ -75,26 +79,6 @@ func (p *PatientHandlerImpl) GetAll(c *gin.Context) {
 		Status:  "success",
 		Message: "success get all data patient",
 		Data:    patients,
-	})
-}
-
-func (p *PatientHandlerImpl) GetByNoMR(c *gin.Context) {
-	var input GetPatientInput
-	if !helper.BindAndValidate(c, &input, "uri") {
-		return
-	}
-
-	patient, err := p.PatientService.GetByNoMR(c.Request.Context(), input)
-	if err != nil {
-		helper.HandleErrorResponde(c, err)
-		return
-	}
-
-	helper.APIResponse(c, helper.WebResponse{
-		Code:    http.StatusOK,
-		Status:  "success",
-		Message: "success get data patient",
-		Data:    patient,
 	})
 }
 

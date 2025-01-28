@@ -13,6 +13,3 @@ type GetQueueInput struct {
 	MedicalRecordNo string `form:"medical_record_no"`
 	Date            string `form:"date"`
 }
-
-type GetQueueByDayInput struct {
-}
