@@ -60,7 +60,7 @@ func main() {
 	router := gin.Default()
 	router.Use(gin.Recovery())
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://127.0.0.1:5500"},
+		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -103,6 +103,7 @@ func main() {
 	registerHandler := register.NewRegisterHandler(registerService)
 
 	api.POST("/auth/login", userHandler.Login)
+	api.POST("/auth/logout", userHandler.Logout)
 	api.POST("/auth/forgot-password", userHandler.UpdatePassword)
 
 	api.GET("/polyclinics", middleware.AuthMiddleware(tokenService), polyclinicHandler.GetAll)

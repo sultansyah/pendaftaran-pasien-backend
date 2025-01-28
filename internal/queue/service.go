@@ -3,7 +3,6 @@ package queue
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"pendaftaran-pasien-backend/internal/custom"
 	"pendaftaran-pasien-backend/internal/helper"
 	"pendaftaran-pasien-backend/internal/patient"
@@ -37,10 +36,8 @@ func (t *QueueServiceImpl) GetAll(ctx context.Context, input GetQueueInput) ([]Q
 	defer helper.HandleTransaction(tx, &err)
 
 	filters := helper.GenerateFilter(input)
-	fmt.Println("filters = ", filters)
 
 	if medicalRecordNo, ok := filters["medical_record_no"]; ok {
-		fmt.Println("halo")
 		medicalRecordNo, ok := medicalRecordNo.(string)
 		if !ok {
 			return []Queue{}, custom.ErrInternal

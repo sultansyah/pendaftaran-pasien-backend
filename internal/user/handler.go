@@ -9,6 +9,7 @@ import (
 
 type UserHandler interface {
 	Login(c *gin.Context)
+	Logout(c *gin.Context)
 	UpdatePassword(c *gin.Context)
 }
 
@@ -40,6 +41,17 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 		Status:  "success",
 		Message: "login success",
 		Data:    user,
+	})
+}
+
+func (u *UserHandlerImpl) Logout(c *gin.Context) {
+	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "success logout",
+		Data:    nil,
 	})
 }
 

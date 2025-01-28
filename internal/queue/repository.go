@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"pendaftaran-pasien-backend/internal/custom"
+	"strings"
 	"time"
 )
 
@@ -44,27 +45,29 @@ func (t *QueueRepositoryImpl) CountQueueByDay(ctx context.Context, tx *sql.Tx, d
 func (t *QueueRepositoryImpl) FindQueues(ctx context.Context, tx *sql.Tx, filters map[string]any) ([]Queue, error) {
 	query := "SELECT QU.queue_id, QU.register_id, QU.queue_number, QU.created_at, QU.updated_at FROM queue AS QU"
 	join := ""
-	where := ""
+	whereConditions := []string{}
 	args := []any{}
 
 	// filters
 	if medicalRecordNo, ok := filters["medical_record_no"]; ok {
-		join += " INNER JOIN register AS RG ON QU.register_id = RG.register_id INNER JOIN patient AS PT ON RG.medical_record_no = PT.medical_record_no"
-		where += " AND PT.medical_record_no = ?"
+		join += " INNER JOIN register AS RG ON QU.register_id = RG.register_id" +
+			" INNER JOIN patient AS PT ON RG.medical_record_no = PT.medical_record_no"
+		whereConditions = append(whereConditions, "PT.medical_record_no = ?")
 		args = append(args, medicalRecordNo)
 	}
 
 	if date, ok := filters["date"]; ok {
-		where += " AND DATE(QU.created_at) = ?"
+		whereConditions = append(whereConditions, "DATE(QU.created_at) = ?")
 		args = append(args, date)
 	}
 
-	// combine where
-	if where != "" {
-		where = " WHERE " + where
+	// combine where conditions
+	where := ""
+	if len(whereConditions) > 0 {
+		where = " WHERE " + strings.Join(whereConditions, " AND ")
 	}
 
-	// combile all
+	// combine all
 	query = query + join + where
 
 	// execute query
