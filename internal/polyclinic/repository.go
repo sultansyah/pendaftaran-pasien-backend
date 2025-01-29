@@ -23,7 +23,8 @@ func NewPolyclinicRepository() PolyclinicRepository {
 }
 
 func (p *PolyclinicRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, error) {
-	query := "SELECT COUNT(clinic_id) AS total FROM polyclinic"
+	query := `SELECT COALESCE(MAX(CAST(REPLACE(clinic_id, 'POL', '') AS UNSIGNED)),1) AS total 
+				FROM polyclinic`
 	row, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		return -1, err

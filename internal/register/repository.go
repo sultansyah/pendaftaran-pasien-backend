@@ -24,7 +24,8 @@ func NewRegisterRepository() RegisterRepository {
 }
 
 func (r *RegisterRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, error) {
-	query := "SELECT COUNT(register_id) AS total from register"
+	query := `SELECT COALESCE(MAX(CAST(REPLACE(register_id, 'RG', '') AS UNSIGNED)), 1) AS total 
+FROM register`
 	row, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		return -1, err

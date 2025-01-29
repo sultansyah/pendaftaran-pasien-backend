@@ -26,7 +26,8 @@ func NewDoctorRepository() DoctorRepository {
 }
 
 func (p *DoctorRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, error) {
-	query := "SELECT COUNT(doctor_id) AS total FROM doctor"
+	query := `SELECT COALESCE(MAX(CAST(REPLACE(doctor_id, 'DR', '') AS UNSIGNED)), 1) AS total 
+FROM doctor`
 	row, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		return -1, err

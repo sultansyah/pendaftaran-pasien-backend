@@ -24,7 +24,7 @@ func NewQueueRepository() QueueRepository {
 }
 
 func (t *QueueRepositoryImpl) CountQueueByDay(ctx context.Context, tx *sql.Tx, date time.Time) (int, error) {
-	query := "SELECT COUNT(queue_id) FROM queue WHERE DATE(created_at) = ?"
+	query := "SELECT COALESCE(MAX(queue_id), 1) FROM queue WHERE DATE(created_at) = ?"
 	row, err := tx.QueryContext(ctx, query, date)
 	if err != nil {
 		return -1, err
