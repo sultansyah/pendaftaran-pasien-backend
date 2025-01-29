@@ -10,7 +10,7 @@ CREATE TABLE patient (
     identity_number VARCHAR(50) NULL,
     city VARCHAR(255) NULL,
     postal_code VARCHAR(10) NULL,
-    medical_record_date DATE NULL,
+    medical_record_date DATETIME NULL,
     birth_weight DECIMAL(5,2) NULL,
     ethnicity VARCHAR(255) NULL,
     subdistrict VARCHAR(255) NULL,

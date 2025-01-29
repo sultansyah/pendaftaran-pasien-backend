@@ -43,7 +43,7 @@ func (p *PatientHandlerImpl) Create(c *gin.Context) {
 }
 
 func (p *PatientHandlerImpl) Delete(c *gin.Context) {
-	var input GetPatientInput
+	var input GetPatientByMRNoInput
 	if !helper.BindAndValidate(c, &input, "uri") {
 		return
 	}
@@ -83,7 +83,7 @@ func (p *PatientHandlerImpl) GetAll(c *gin.Context) {
 }
 
 func (p *PatientHandlerImpl) Update(c *gin.Context) {
-	var inputId GetPatientInput
+	var inputId GetPatientByMRNoInput
 	if !helper.BindAndValidate(c, &inputId, "uri") {
 		return
 	}

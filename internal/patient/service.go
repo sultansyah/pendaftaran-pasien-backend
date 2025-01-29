@@ -10,8 +10,8 @@ import (
 type PatientService interface {
 	GetAll(ctx context.Context, input GetPatientInput) ([]Patient, error)
 	Create(ctx context.Context, input CreatePatientInput) (Patient, error)
-	Update(ctx context.Context, inputId GetPatientInput, inputData CreatePatientInput) error
-	Delete(ctx context.Context, input GetPatientInput) error
+	Update(ctx context.Context, inputId GetPatientByMRNoInput, inputData CreatePatientInput) error
+	Delete(ctx context.Context, input GetPatientByMRNoInput) error
 }
 
 type PatientServiceImpl struct {
@@ -46,11 +46,14 @@ func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInpu
 		motherMedicalRecordNo = &motherP.MedicalRecordNo
 	}
 
-	identityNumber, err := p.PatientRepository.FindByIdentityNumber(ctx, tx, input.IdentityNumber)
-	if err != nil {
+	exists, err := p.PatientRepository.FindByIdentityNumber(ctx, tx, input.IdentityType, input.IdentityNumber)
+	if err != nil && err != custom.ErrIdentityNumberNotFound {
 		return Patient{}, err
 	}
-	if identityNumber.MedicalRecordNo != "" && err != custom.ErrIdentityNumberNotFound {
+	if err != custom.ErrIdentityNumberNotFound {
+		return Patient{}, custom.ErrIdentityNumberAlreadyExists
+	}
+	if exists.MedicalRecordNo != "" || exists.IdentityType == input.IdentityType || exists.IdentityNumber == input.IdentityNumber {
 		return Patient{}, custom.ErrIdentityNumberAlreadyExists
 	}
 
@@ -120,7 +123,7 @@ func (p *PatientServiceImpl) Create(ctx context.Context, input CreatePatientInpu
 	return patient, nil
 }
 
-func (p *PatientServiceImpl) Delete(ctx context.Context, input GetPatientInput) error {
+func (p *PatientServiceImpl) Delete(ctx context.Context, input GetPatientByMRNoInput) error {
 	tx, err := p.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -172,7 +175,7 @@ func (p *PatientServiceImpl) GetAll(ctx context.Context, input GetPatientInput) 
 	return patients, nil
 }
 
-func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput, inputData CreatePatientInput) error {
+func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientByMRNoInput, inputData CreatePatientInput) error {
 	tx, err := p.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -198,6 +201,14 @@ func (p *PatientServiceImpl) Update(ctx context.Context, inputId GetPatientInput
 	}
 	if patient.MedicalRecordNo == "" {
 		return custom.ErrMedicalRecordNotFound
+	}
+
+	exists, err := p.PatientRepository.FindByIdentityNumber(ctx, tx, inputData.IdentityType, inputData.IdentityNumber)
+	if err != nil && err != custom.ErrIdentityNumberNotFound {
+		return err
+	}
+	if exists.MedicalRecordNo != "" && exists.MedicalRecordNo != inputData.MedicalRecordNo {
+		return custom.ErrIdentityNumberAlreadyExists
 	}
 
 	dateOfBirth, err := helper.ParseDate(inputData.DateOfBirth)

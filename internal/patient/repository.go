@@ -9,7 +9,7 @@ import (
 
 type PatientRepository interface {
 	FindByNoMR(ctx context.Context, tx *sql.Tx, medicalRecordNo string) (Patient, error)
-	FindByIdentityNumber(ctx context.Context, tx *sql.Tx, identityNumber string) (Patient, error)
+	FindByIdentityNumber(ctx context.Context, tx *sql.Tx, identityType string, identityNumber string) (Patient, error)
 	Find(ctx context.Context, tx *sql.Tx, filters map[string]any) ([]Patient, error)
 	Insert(ctx context.Context, tx *sql.Tx, patient Patient) (Patient, error)
 	Update(ctx context.Context, tx *sql.Tx, patient Patient) error
@@ -46,7 +46,7 @@ func (p *PatientRepositoryImpl) Count(ctx context.Context, tx *sql.Tx) (int, err
 
 func (p *PatientRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, medicalRecordNo string) error {
 	query := "UPDATE patient SET is_deleted=? WHERE medical_record_no = ? AND is_deleted = 0"
-	_, err := tx.ExecContext(ctx, query, medicalRecordNo)
+	_, err := tx.ExecContext(ctx, query, 1, medicalRecordNo)
 	if err != nil {
 		return err
 	}
@@ -117,9 +117,9 @@ func (p *PatientRepositoryImpl) FindByNoMR(ctx context.Context, tx *sql.Tx, medi
 	return patient, custom.ErrMedicalRecordNotFound
 }
 
-func (p *PatientRepositoryImpl) FindByIdentityNumber(ctx context.Context, tx *sql.Tx, identityNumber string) (Patient, error) {
-	query := "SELECT medical_record_no, patient_name, gender, place_of_birth, date_of_birth, address, phone_number, identity_type, identity_number, city, postal_code, medical_record_date, birth_weight, ethnicity, subdistrict, district, regency, province, citizenship, country, language, blood_type, KK_number, marital_status, religion, occupation, education, npwp, file_location, relative_name, relative_relationship, relative_phone, relative_identity_number, relative_occupation, relative_address, relative_city, relative_postal_code, mother_medical_record_no, created_at, updated_at FROM patient where identity_number = ? AND is_deleted = 0"
-	row, err := tx.QueryContext(ctx, query, identityNumber)
+func (p *PatientRepositoryImpl) FindByIdentityNumber(ctx context.Context, tx *sql.Tx, identityType string, identityNumber string) (Patient, error) {
+	query := "SELECT medical_record_no, patient_name, gender, place_of_birth, date_of_birth, address, phone_number, identity_type, identity_number, city, postal_code, medical_record_date, birth_weight, ethnicity, subdistrict, district, regency, province, citizenship, country, language, blood_type, KK_number, marital_status, religion, occupation, education, npwp, file_location, relative_name, relative_relationship, relative_phone, relative_identity_number, relative_occupation, relative_address, relative_city, relative_postal_code, mother_medical_record_no, created_at, updated_at FROM patient WHERE identity_type = ? AND identity_number = ? AND is_deleted = 0"
+	row, err := tx.QueryContext(ctx, query, identityType, identityNumber)
 	if err != nil {
 		return Patient{}, err
 	}

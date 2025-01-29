@@ -1,6 +1,7 @@
 package patient
 
 type CreatePatientInput struct {
+	MedicalRecordNo   string  `json:"medical_record_no"`
 	PatientName       string  `json:"patient_name" binding:"required"`
 	Gender            string  `json:"gender" binding:"required"`
 	PlaceOfBirth      string  `json:"place_of_birth" binding:"required"`
@@ -40,6 +41,10 @@ type CreatePatientInput struct {
 	RelativePostalCode     string `json:"relative_postal_code" binding:"required"`
 
 	MotherMedicalRecordNo *string `json:"mother_medical_record_no" binding:"omitempty"`
+}
+
+type GetPatientByMRNoInput struct {
+	MedicalRecordNo string `uri:"medical_record_no" binding:"required"`
 }
 
 type GetPatientInput struct {

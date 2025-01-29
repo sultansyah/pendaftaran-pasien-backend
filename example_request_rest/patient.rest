@@ -3,7 +3,7 @@
 
 ### Create
 POST {{baseUrl}}/patients
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgzODczODksInVzZXJfaWQiOjF9.-s--_Mf2tn3hzbV6OHR7s2m-LM4udafQ3SbBnkot4sE
 Content-Type: application/json
 
 {
@@ -50,18 +50,18 @@ Content-Type: application/json
 
 ### Get ALl
 ### /patients?medical_record_no=12345&identity_number=02192120319
-GET {{baseUrl}}/patients
+GET {{baseUrl}}/patients?medical_record_no=20250127160957005 
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 ### Delete By Medical Record No
-DELETE {{baseUrl}}/patients/20250126192532000
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+DELETE {{baseUrl}}/patients/20250127160951000 
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgzODczODksInVzZXJfaWQiOjF9.-s--_Mf2tn3hzbV6OHR7s2m-LM4udafQ3SbBnkot4sE
 Content-Type: application/json
 
 ### Update
-PUT {{baseUrl}}/patients/20250126193707002
-Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgwODUyNTEsInVzZXJfaWQiOjF9.RcHdI6mJrc-ZLK45Eyb3FL7yv-ik9pAFOQbG04txWTU
+PUT {{baseUrl}}/patients/20250127160951000
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgzODczODksInVzZXJfaWQiOjF9.-s--_Mf2tn3hzbV6OHR7s2m-LM4udafQ3SbBnkot4sE
 Content-Type: application/json
 
 {
