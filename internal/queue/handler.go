@@ -11,6 +11,7 @@ type QueueHandler interface {
 	GetAll(c *gin.Context)
 	GetById(c *gin.Context)
 	Update(c *gin.Context)
+	SetCompleted(c *gin.Context)
 }
 
 type QueueHandlerImpl struct {
@@ -81,7 +82,27 @@ func (q *QueueHandlerImpl) Update(c *gin.Context) {
 	helper.APIResponse(c, helper.WebResponse{
 		Code:    http.StatusOK,
 		Status:  "success",
-		Message: "success get all data queue",
+		Message: "success update data queue",
+		Data:    "OK",
+	})
+}
+
+func (q *QueueHandlerImpl) SetCompleted(c *gin.Context) {
+	var input GetQueueByIdInput
+	if !helper.BindAndValidate(c, &input, "uri") {
+		return
+	}
+
+	err := q.QueueService.SetCompleted(c.Request.Context(), input)
+	if err != nil {
+		helper.HandleErrorResponde(c, err)
+		return
+	}
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "success set completed queue",
 		Data:    "OK",
 	})
 }

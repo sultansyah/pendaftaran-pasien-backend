@@ -50,4 +50,5 @@ type GetPatientByMRNoInput struct {
 type GetPatientInput struct {
 	MedicalRecordNo string `form:"medical_record_no"`
 	IdentityNumber  string `form:"identity_number"`
+	IdentityType    string `form:"identity_type"`
 }

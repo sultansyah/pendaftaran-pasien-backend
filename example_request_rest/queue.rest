@@ -3,11 +3,16 @@
 
 ### Get ALl
 ### /queues?medical_record_no=12345&date=2025-01-27
-GET {{baseUrl}}/queues?medical_record_no=20250127160951000&date=2025-01-27
+GET {{baseUrl}}/queues?date=2025-01-27
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 
 ### Get By ID
 GET {{baseUrl}}/queues/1
+Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
+Content-Type: application/json
+
+### Set Completed Queue By ID
+PUT {{baseUrl}}/queues/8
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json

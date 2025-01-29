@@ -141,6 +141,7 @@ func main() {
 
 	api.GET("/queues", queueHandler.GetAll)
 	api.GET("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.GetById)
+	api.PUT("/queues/:queue_id", middleware.AuthMiddleware(tokenService), queueHandler.SetCompleted)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("Failed to run server: %v", err)

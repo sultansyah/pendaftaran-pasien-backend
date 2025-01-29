@@ -10,6 +10,7 @@ import (
 	"pendaftaran-pasien-backend/internal/polyclinic"
 	"pendaftaran-pasien-backend/internal/queue"
 	"pendaftaran-pasien-backend/internal/transaction"
+	"time"
 )
 
 type RegisterService interface {
@@ -79,8 +80,10 @@ func (r *RegisterServiceImpl) Create(ctx context.Context, input CreateRegisterIn
 		return RegisterWithTransactionAndQueue{}, err
 	}
 
+	registerId := helper.GenerateRegisterNo(total + 1)
+
 	register := Register{
-		RegisterID:        helper.GenerateRegisterNo(total + 1),
+		RegisterID:        registerId,
 		MedicalRecordNo:   input.MedicalRecordNo,
 		SessionPolyclinic: input.SessionPolyclinic,
 		ClinicID:          polyclinic.ClinicID,
@@ -96,21 +99,22 @@ func (r *RegisterServiceImpl) Create(ctx context.Context, input CreateRegisterIn
 	if err != nil {
 		return RegisterWithTransactionAndQueue{}, err
 	}
+	// fmt.Println("register = ", register)
+	// register, err = r.RegisterRepository.FindById(ctx, tx, registerId)
+	// if err != nil {
+	// 	fmt.Println("err = ", err.Error())
+	// 	return RegisterWithTransactionAndQueue{}, err
+	// }
+	// if register.RegisterID == "" {
+	// 	return RegisterWithTransactionAndQueue{}, custom.ErrRegisterNotFound
+	// }
 
-	register, err = r.RegisterRepository.FindById(ctx, tx, register.RegisterID)
-	if err != nil {
-		return RegisterWithTransactionAndQueue{}, err
-	}
-	if register.RegisterID == "" {
-		return RegisterWithTransactionAndQueue{}, custom.ErrNotFound
-	}
+	// date, err := helper.ParseDatetimeToDate(register.CreatedAt)
+	// if err != nil {
+	// 	return RegisterWithTransactionAndQueue{}, err
+	// }
 
-	date, err := helper.ParseDatetimeToDate(register.CreatedAt)
-	if err != nil {
-		return RegisterWithTransactionAndQueue{}, err
-	}
-
-	total, err = r.QueueRepository.CountQueueByDay(ctx, tx, date)
+	total, err = r.QueueRepository.CountQueueByDay(ctx, tx, time.Now().Format("2006-01-02"))
 	if err != nil {
 		return RegisterWithTransactionAndQueue{}, err
 	}

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"pendaftaran-pasien-backend/internal/custom"
 	"strings"
-	"time"
 )
 
 type QueueRepository interface {
@@ -13,7 +12,8 @@ type QueueRepository interface {
 	FindById(ctx context.Context, tx *sql.Tx, queueId int) (Queue, error)
 	Insert(ctx context.Context, tx *sql.Tx, queue Queue) (Queue, error)
 	Update(ctx context.Context, tx *sql.Tx, queue Queue) error
-	CountQueueByDay(ctx context.Context, tx *sql.Tx, date time.Time) (int, error)
+	CountQueueByDay(ctx context.Context, tx *sql.Tx, date string) (int, error)
+	SetCompleted(ctx context.Context, tx *sql.Tx, id int) error
 }
 
 type QueueRepositoryImpl struct {
@@ -23,8 +23,8 @@ func NewQueueRepository() QueueRepository {
 	return &QueueRepositoryImpl{}
 }
 
-func (t *QueueRepositoryImpl) CountQueueByDay(ctx context.Context, tx *sql.Tx, date time.Time) (int, error) {
-	query := "SELECT COALESCE(MAX(queue_id), 1) FROM queue WHERE DATE(created_at) = ?"
+func (t *QueueRepositoryImpl) CountQueueByDay(ctx context.Context, tx *sql.Tx, date string) (int, error) {
+	query := "SELECT COALESCE(MAX(queue_number), 1) FROM queue WHERE DATE(created_at) = ?"
 	row, err := tx.QueryContext(ctx, query, date)
 	if err != nil {
 		return -1, err
@@ -43,7 +43,7 @@ func (t *QueueRepositoryImpl) CountQueueByDay(ctx context.Context, tx *sql.Tx, d
 }
 
 func (t *QueueRepositoryImpl) FindQueues(ctx context.Context, tx *sql.Tx, filters map[string]any) ([]Queue, error) {
-	query := "SELECT QU.queue_id, QU.register_id, QU.queue_number, QU.created_at, QU.updated_at FROM queue AS QU"
+	query := "SELECT QU.queue_id, QU.register_id, QU.queue_number, QU.is_completed, QU.created_at, QU.updated_at FROM queue AS QU"
 	join := ""
 	whereConditions := []string{}
 	args := []any{}
@@ -80,7 +80,7 @@ func (t *QueueRepositoryImpl) FindQueues(ctx context.Context, tx *sql.Tx, filter
 	var queues []Queue
 	for rows.Next() {
 		var queue Queue
-		if err := rows.Scan(&queue.QueueID, &queue.RegisterID, &queue.QueueNumber, &queue.CreatedAt, &queue.UpdatedAt); err != nil {
+		if err := rows.Scan(&queue.QueueID, &queue.RegisterID, &queue.QueueNumber, &queue.IsCompleted, &queue.CreatedAt, &queue.UpdatedAt); err != nil {
 			return []Queue{}, err
 		}
 		queues = append(queues, queue)
@@ -90,7 +90,7 @@ func (t *QueueRepositoryImpl) FindQueues(ctx context.Context, tx *sql.Tx, filter
 }
 
 func (t *QueueRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, queueId int) (Queue, error) {
-	query := "SELECT queue_id, register_id, queue_number, created_at, updated_at FROM queue WHERE queue_id = ?"
+	query := "SELECT queue_id, register_id, queue_number, is_completed, created_at, updated_at FROM queue WHERE queue_id = ?"
 	row, err := tx.QueryContext(ctx, query, queueId)
 	if err != nil {
 		return Queue{}, err
@@ -99,7 +99,7 @@ func (t *QueueRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, queueId 
 
 	var queue Queue
 	if row.Next() {
-		if err := row.Scan(&queue.QueueID, &queue.RegisterID, &queue.QueueNumber, &queue.CreatedAt, &queue.UpdatedAt); err != nil {
+		if err := row.Scan(&queue.QueueID, &queue.RegisterID, &queue.QueueNumber, &queue.IsCompleted, &queue.CreatedAt, &queue.UpdatedAt); err != nil {
 			return Queue{}, err
 		}
 
@@ -129,6 +129,16 @@ func (t *QueueRepositoryImpl) Insert(ctx context.Context, tx *sql.Tx, queue Queu
 func (t *QueueRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, queue Queue) error {
 	query := "UPDATE queue SET register_id=?,queue_number=? WHERE queue_id = ?"
 	_, err := tx.ExecContext(ctx, query, queue.RegisterID, queue.QueueNumber)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *QueueRepositoryImpl) SetCompleted(ctx context.Context, tx *sql.Tx, id int) error {
+	query := "UPDATE queue SET is_completed=1 WHERE queue_id = ?"
+	_, err := tx.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
 	}

@@ -12,6 +12,7 @@ type QueueService interface {
 	GetAll(ctx context.Context, input GetQueueInput) ([]Queue, error)
 	GetById(ctx context.Context, input GetQueueByIdInput) (Queue, error)
 	Update(ctx context.Context, inputId GetQueueByIdInput, inputData UpdateQueueInput) error
+	SetCompleted(ctx context.Context, input GetQueueByIdInput) error
 }
 
 type QueueServiceImpl struct {
@@ -94,6 +95,29 @@ func (t *QueueServiceImpl) Update(ctx context.Context, inputId GetQueueByIdInput
 	queue.QueueNumber = inputData.QueueNumber
 
 	err = t.QueueRepository.Update(ctx, tx, queue)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *QueueServiceImpl) SetCompleted(ctx context.Context, input GetQueueByIdInput) error {
+	tx, err := t.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer helper.HandleTransaction(tx, &err)
+
+	queue, err := t.QueueRepository.FindById(ctx, tx, input.QueueID)
+	if err != nil {
+		return err
+	}
+	if queue.QueueID <= 0 {
+		return custom.ErrNotFound
+	}
+
+	err = t.QueueRepository.SetCompleted(ctx, tx, input.QueueID)
 	if err != nil {
 		return err
 	}

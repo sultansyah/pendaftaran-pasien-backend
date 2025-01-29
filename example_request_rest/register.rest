@@ -10,7 +10,7 @@ Content-Type: application/json
     "medical_record_no": "20250127160951000",
     "session_polyclinic": "FULLDAY",
     "clinic_id": "POL01",
-    "doctor_id": "DR01",
+    "doctor_id": "DR10",
     "department": "Rawat Jalan",
     "class": "NON KELAS",
     "entry_method": "Datang Sendiri",
@@ -31,7 +31,7 @@ Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAs
 Content-Type: application/json
 
 ### Get By Register ID
-GET {{baseUrl}}/registers/RG001
+GET {{baseUrl}}/registers/RG019
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgyMjgxMjAsInVzZXJfaWQiOjF9.FMjkrL55Nc82mshD-isSkQo5-MIMZJsA05Bz8AqMIq0
 Content-Type: application/json
 
@@ -50,8 +50,8 @@ Content-Type: application/json
     "transaction_id": 2,
     "medical_record_no": "20250127160951000",
     "session_polyclinic": "Morning",
-    "clinic_id": "POL02",
-    "doctor_id": "DR01",
+    "clinic_id": "POL01",
+    "doctor_id": "DR10",
     "department": "Rawat Jalan",
     "class": "NON KELAS",
     "entry_method": "Diantar",

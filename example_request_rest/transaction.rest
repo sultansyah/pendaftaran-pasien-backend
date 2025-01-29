@@ -9,7 +9,7 @@ Content-Type: application/json
 ### Get By Transaction ID
 GET {{baseUrl}}/transactions/1
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
-Content-Type: application/json
+Content-Type: application/go json
 
 ### Get By Medical Record No
 GET {{baseUrl}}/patients/20250126193707002/transactions
@@ -22,11 +22,11 @@ Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIs
 Content-Type: application/json
 
 {
-    "registration_fee": 50000,
+    "registration_fee": 1000,
     "examination_fee": 150000,
     "total_fee": 200000,
     "discount": 5000,
     "total_payment": 195000,
     "payment_type": "Cash",
-    "payment_status": "Lunas"
+    "payment_status": "Paid"
 }

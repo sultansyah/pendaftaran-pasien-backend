@@ -49,8 +49,8 @@ Content-Type: application/json
 }
 
 ### Get ALl
-### /patients?medical_record_no=12345&identity_number=02192120319
-GET {{baseUrl}}/patients?medical_record_no=20250127160957005 
+### /patients?medical_record_no=12345&identity_number=02192120319&identity_type=KTP
+GET {{baseUrl}}/patients?identity_number=21932192319321&identity_type=SIM
 Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzgxNzI1NjIsInVzZXJfaWQiOjF9.G0iBP68wN_oFPqoUttQbAGw9GWKkRpbtuE2OMeYrJoE;
 Content-Type: application/json
 

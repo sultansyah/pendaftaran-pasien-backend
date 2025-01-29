@@ -7,7 +7,7 @@ CREATE TABLE transactions (
     discount DECIMAL(10, 2) DEFAULT 0.00,
     total_payment DECIMAL(10, 2) NOT NULL,
     payment_type ENUM('cash', 'qris', 'bank_transfer', 'credit_card') DEFAULT 'cash',
-    payment_status ENUM('PAID', 'UNPAID') DEFAULT 'UNPAID',
+    payment_status ENUM('PAID', 'UNPAID', 'PENDING') DEFAULT 'PENDING',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (register_id) REFERENCES register(register_id)

@@ -67,6 +67,10 @@ func (p *PatientRepositoryImpl) Find(ctx context.Context, tx *sql.Tx, filters ma
 		whereConditions = append(whereConditions, "identity_number = ?")
 		args = append(args, identityNumber)
 	}
+	if identityType, ok := filters["identity_type"]; ok {
+		whereConditions = append(whereConditions, "identity_type = ?")
+		args = append(args, identityType)
+	}
 
 	// combine where conditions
 	where := ""
